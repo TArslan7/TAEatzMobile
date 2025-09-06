@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/usecases/get_menu_by_restaurant_id.dart';
 import '../../domain/usecases/get_menu_items_by_category.dart';
-import '../../domain/usecases/search_menu_items.dart';
+import '../../domain/usecases/search_menu_items.dart' as search_usecase;
 import '../../domain/repositories/menu_repository.dart';
 import 'menu_event.dart';
 import 'menu_state.dart';
@@ -9,7 +9,7 @@ import 'menu_state.dart';
 class MenuBloc extends Bloc<MenuEvent, MenuState> {
   final GetMenuByRestaurantId getMenuByRestaurantId;
   final GetMenuItemsByCategory getMenuItemsByCategory;
-  final SearchMenuItems searchMenuItems;
+  final search_usecase.SearchMenuItems searchMenuItems;
   final MenuRepository repository;
 
   MenuBloc({

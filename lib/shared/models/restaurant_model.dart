@@ -192,6 +192,18 @@ class RestaurantModel extends Equatable {
       isOpen: isOpen,
       isDeliveryAvailable: isDeliveryAvailable,
       isPickupAvailable: isPickupAvailable,
+      acceptedPaymentMethods: acceptedPaymentMethods.map((e) => e.name).toList(),
+      deliveryAreas: deliveryAreas.map((e) => e.name).toList(),
+      settings: {
+        'allowPreOrders': settings.allowPreOrders,
+        'allowScheduledOrders': settings.allowScheduledOrders,
+        'maxAdvanceOrderDays': settings.maxAdvanceOrderDays,
+        'requirePhoneVerification': settings.requirePhoneVerification,
+        'allowGuestOrders': settings.allowGuestOrders,
+        'enableReviews': settings.enableReviews,
+        'enableRatings': settings.enableRatings,
+        'enableLoyaltyProgram': settings.enableLoyaltyProgram,
+      },
       createdAt: createdAt,
       updatedAt: updatedAt,
     );

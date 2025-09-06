@@ -26,6 +26,9 @@ class RestaurantEntity extends Equatable {
   final bool isOpen;
   final bool isDeliveryAvailable;
   final bool isPickupAvailable;
+  final List<String> acceptedPaymentMethods;
+  final List<String> deliveryAreas;
+  final Map<String, dynamic> settings;
   final DateTime createdAt;
   final DateTime updatedAt;
   
@@ -55,6 +58,9 @@ class RestaurantEntity extends Equatable {
     required this.isOpen,
     required this.isDeliveryAvailable,
     required this.isPickupAvailable,
+    required this.acceptedPaymentMethods,
+    required this.deliveryAreas,
+    required this.settings,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -91,6 +97,9 @@ class RestaurantEntity extends Equatable {
     isOpen,
     isDeliveryAvailable,
     isPickupAvailable,
+    acceptedPaymentMethods,
+    deliveryAreas,
+    settings,
     createdAt,
     updatedAt,
   ];
