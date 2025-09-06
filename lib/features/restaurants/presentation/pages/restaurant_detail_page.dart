@@ -442,7 +442,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage>
             spacing: AppTheme.spacingS,
             runSpacing: AppTheme.spacingS,
             children: widget.restaurant.acceptedPaymentMethods.map((method) => Chip(
-              label: Text(method.name),
+              label: Text(method),
               backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
             )).toList(),
           ),
