@@ -19,7 +19,7 @@ class ThemeManager extends ChangeNotifier {
 
   // Dark Mode Colors
   static const Color darkBackground = Color(0xFF0D0D0D); // #0D0D0D
-  static const Color darkPrimaryRed = Color(0xFFFF6B35); // #FF6B35
+  static const Color darkPrimaryRed = Color(0xFFFF3B30); // #FF3B30 (same as light mode)
   static const Color darkSecondaryGreen = Color(0xFF2ECC71); // #2ECC71
   static const Color darkTextLight = Color(0xFFF5F5F5); // #F5F5F5
   static const Color darkAccentYellow = Color(0xFFFFCC66); // #FFCC66

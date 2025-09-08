@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import 'dart:math' as math;
-
-import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/theme_manager.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../restaurants/presentation/bloc/restaurant_bloc.dart';
 import '../../../restaurants/presentation/bloc/restaurant_event.dart';
 import '../../../restaurants/presentation/bloc/restaurant_state.dart';
-import '../../../restaurants/presentation/widgets/improved_restaurant_card.dart';
-import '../../../restaurants/presentation/widgets/category_chip.dart';
-import '../../../restaurants/presentation/widgets/restaurant_loading_shimmer.dart';
 import '../../../restaurants/presentation/pages/restaurant_detail_page.dart';
 
 class ImprovedHomeTab extends StatefulWidget {
@@ -30,13 +24,9 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
   
   late AnimationController _fadeController;
   late AnimationController _slideController;
-  late AnimationController _pulseController;
-  late AnimationController _staggerController;
   late AnimationController _eatDrinkController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
-  late Animation<double> _pulseAnimation;
-  late Animation<double> _staggerAnimation;
   late Animation<double> _eatDrinkAnimation;
 
   // Function to get time-based greeting
@@ -67,14 +57,6 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
-    _pulseController = AnimationController(
-      duration: const Duration(milliseconds: 2000),
-      vsync: this,
-    );
-    _staggerController = AnimationController(
-      duration: const Duration(milliseconds: 1200),
-      vsync: this,
-    );
     _eatDrinkController = AnimationController(
       duration: const Duration(milliseconds: 5000),
       vsync: this,
@@ -96,21 +78,6 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
       curve: Curves.easeOutCubic,
     ));
     
-    _pulseAnimation = Tween<double>(
-      begin: 0.95,
-      end: 1.05,
-    ).animate(CurvedAnimation(
-      parent: _pulseController,
-      curve: Curves.easeInOut,
-    ));
-    
-    _staggerAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _staggerController,
-      curve: Curves.easeOutCubic,
-    ));
     
     _eatDrinkAnimation = Tween<double>(
       begin: 0.0,
@@ -123,8 +90,6 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
     // Start animations
     _fadeController.forward();
     _slideController.forward();
-    _pulseController.repeat(reverse: true);
-    _staggerController.forward();
     _eatDrinkController.repeat(reverse: true);
     
     // Load initial data
@@ -137,8 +102,6 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
     _searchController.dispose();
     _fadeController.dispose();
     _slideController.dispose();
-    _pulseController.dispose();
-    _staggerController.dispose();
     _eatDrinkController.dispose();
     super.dispose();
   }
@@ -228,11 +191,7 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: themeManager.headerGradient,
-            ),
+            color: themeManager.primaryRed,
           ),
           child: SafeArea(
             child: Padding(
@@ -257,7 +216,7 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
                                     child: Text(
                                       _getTimeBasedGreeting(),
                                       style: TextStyle(
-                                        color: (themeManager?.textColor ?? Colors.grey).withOpacity(0.7),
+                                        color: themeManager.textColor.withOpacity(0.7),
                                         fontSize: 16,
                                         fontWeight: FontWeight.w400,
                                       ),
@@ -798,14 +757,7 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
         duration: const Duration(milliseconds: 300),
         width: 70,
         decoration: BoxDecoration(
-          gradient: isSelected
-              ? LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [color, color.withOpacity(0.8)],
-                )
-              : null,
-          color: isSelected ? null : const Color(0xFF2D2D2D),
+          color: isSelected ? color : const Color(0xFF2D2D2D),
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
@@ -981,14 +933,7 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20),
                 ),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    const Color(0xFFDC2626).withOpacity(0.8),
-                    const Color(0xFF991B1B).withOpacity(0.8),
-                  ],
-                ),
+                color: themeManager?.primaryRed ?? Colors.red,
               ),
               child: Stack(
                 children: [
@@ -1000,14 +945,7 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
                           topLeft: Radius.circular(20),
                           topRight: Radius.circular(20),
                         ),
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            const Color(0xFFDC2626).withOpacity(0.3),
-                            const Color(0xFF991B1B).withOpacity(0.3),
-                          ],
-                        ),
+                        color: (themeManager?.primaryRed ?? Colors.red).withOpacity(0.3),
                       ),
                       child: const Center(
                         child: Icon(
