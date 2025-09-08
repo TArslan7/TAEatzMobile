@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../core/theme/app_theme.dart';
-import '../../../../core/constants/app_constants.dart';
+import '../../../../core/theme/theme_manager.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../restaurants/presentation/bloc/restaurant_bloc.dart';
 import '../../../restaurants/presentation/bloc/restaurant_event.dart';
 import '../../../restaurants/presentation/bloc/restaurant_state.dart';
 import '../../../restaurants/presentation/widgets/restaurant_card.dart';
 import '../../../restaurants/presentation/widgets/category_chip.dart';
+import '../../../search/presentation/pages/search_page.dart';
 import '../../../restaurants/presentation/widgets/restaurant_loading_shimmer.dart';
-import '../../../restaurants/presentation/pages/restaurant_detail_page.dart';
+import '../widgets/improved_home_tab.dart';
+import '../../../orders/presentation/pages/orders_page.dart';
+import '../../../profile/presentation/pages/profile_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,54 +25,106 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
+  late PageController _pageController;
 
   final List<Widget> _pages = [
-    const HomeTab(),
+    const ImprovedHomeTab(),
     const SearchTab(),
-    const OrdersTab(),
-    const ProfileTab(),
+    const OrdersPage(),
+    const ProfilePage(),
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: _currentIndex);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _onTabTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  void _onPageChanged(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _pages,
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: AppTheme.primaryColor,
-        unselectedItemColor: AppTheme.textTertiaryColor,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
+    return Consumer<ThemeManager>(
+      builder: (context, themeManager, child) {
+        return Scaffold(
+          backgroundColor: themeManager.backgroundColor,
+          body: PageView(
+            controller: _pageController,
+            onPageChanged: _onPageChanged,
+            children: _pages,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search_outlined),
-            activeIcon: Icon(Icons.search),
-            label: 'Search',
+          bottomNavigationBar: Container(
+            decoration: BoxDecoration(
+              color: themeManager.cardColor,
+              boxShadow: [
+                BoxShadow(
+                  color: themeManager.shadowColor,
+                  blurRadius: 8,
+                  offset: const Offset(0, -2),
+                ),
+              ],
+            ),
+            child: BottomNavigationBar(
+              currentIndex: _currentIndex,
+              onTap: _onTabTapped,
+              type: BottomNavigationBarType.fixed,
+              backgroundColor: themeManager.cardColor,
+              selectedItemColor: themeManager.primaryRed,
+              unselectedItemColor: themeManager.textColor.withOpacity(0.6),
+              selectedLabelStyle: AppTheme.caption.copyWith(
+                fontWeight: FontWeight.w600,
+                color: themeManager.textColor,
+              ),
+              unselectedLabelStyle: AppTheme.caption.copyWith(
+                color: themeManager.textColor.withOpacity(0.6),
+              ),
+              items: [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home_outlined),
+                  activeIcon: Icon(Icons.home),
+                  label: 'Home',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.search_outlined),
+                  activeIcon: Icon(Icons.search),
+                  label: 'Search',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.receipt_long_outlined),
+                  activeIcon: Icon(Icons.receipt_long),
+                  label: 'Orders',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.person_outline),
+                  activeIcon: Icon(Icons.person),
+                  label: 'Profile',
+                ),
+              ],
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.receipt_long_outlined),
-            activeIcon: Icon(Icons.receipt_long),
-            label: 'Orders',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
@@ -398,35 +454,7 @@ class SearchTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Search'),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(60),
-          child: Padding(
-            padding: const EdgeInsets.all(AppTheme.spacingM),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Search for restaurants or dishes...',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.tune),
-                  onPressed: () {
-                    // TODO: Open filters
-                  },
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppTheme.radiusL),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-      body: const Center(
-        child: Text('Search functionality coming soon!'),
-      ),
-    );
+    return const SearchPage();
   }
 }
 
@@ -435,37 +463,7 @@ class OrdersTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Orders'),
-      ),
-      body: const Center(
-        child: Text('Order history coming soon!'),
-      ),
-    );
+    return const OrdersPage();
   }
 }
 
-class ProfileTab extends StatelessWidget {
-  const ProfileTab({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              // TODO: Navigate to settings
-            },
-          ),
-        ],
-      ),
-      body: const Center(
-        child: Text('Profile page coming soon!'),
-      ),
-    );
-  }
-}

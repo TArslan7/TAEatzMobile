@@ -1,264 +1,304 @@
 import 'package:dio/dio.dart';
-import 'package:retrofit/retrofit.dart';
+import 'package:flutter/foundation.dart';
 import '../constants/app_constants.dart';
-import '../errors/exceptions.dart';
 
-part 'api_client.g.dart';
+class ApiClient {
+  static ApiClient? _instance;
+  static ApiClient get instance => _instance ??= ApiClient._();
+  
+  ApiClient._();
 
-@RestApi(baseUrl: AppConstants.baseUrl + AppConstants.apiVersion)
-abstract class ApiClient {
-  factory ApiClient(Dio dio, {String baseUrl}) = _ApiClient;
-  
-  // Authentication Endpoints
-  @POST('/auth/login')
-  Future<Map<String, dynamic>> login(@Body() Map<String, dynamic> loginData);
-  
-  @POST('/auth/register')
-  Future<Map<String, dynamic>> register(@Body() Map<String, dynamic> registerData);
-  
-  @POST('/auth/logout')
-  Future<Map<String, dynamic>> logout(@Header('Authorization') String token);
-  
-  @POST('/auth/refresh')
-  Future<Map<String, dynamic>> refreshToken(@Body() Map<String, dynamic> refreshData);
-  
-  @POST('/auth/forgot-password')
-  Future<Map<String, dynamic>> forgotPassword(@Body() Map<String, dynamic> emailData);
-  
-  @POST('/auth/reset-password')
-  Future<Map<String, dynamic>> resetPassword(@Body() Map<String, dynamic> resetData);
-  
-  // User Endpoints
-  @GET('/user/profile')
-  Future<Map<String, dynamic>> getUserProfile(@Header('Authorization') String token);
-  
-  @PUT('/user/profile')
-  Future<Map<String, dynamic>> updateUserProfile(
-    @Header('Authorization') String token,
-    @Body() Map<String, dynamic> profileData,
-  );
-  
-  @GET('/user/addresses')
-  Future<Map<String, dynamic>> getUserAddresses(@Header('Authorization') String token);
-  
-  @POST('/user/addresses')
-  Future<Map<String, dynamic>> addUserAddress(
-    @Header('Authorization') String token,
-    @Body() Map<String, dynamic> addressData,
-  );
-  
-  @PUT('/user/addresses/{id}')
-  Future<Map<String, dynamic>> updateUserAddress(
-    @Header('Authorization') String token,
-    @Path('id') String addressId,
-    @Body() Map<String, dynamic> addressData,
-  );
-  
-  @DELETE('/user/addresses/{id}')
-  Future<Map<String, dynamic>> deleteUserAddress(
-    @Header('Authorization') String token,
-    @Path('id') String addressId,
-  );
-  
-  // Restaurant Endpoints
-  @GET('/restaurants')
-  Future<Map<String, dynamic>> getRestaurants(
-    @Query('lat') double? latitude,
-    @Query('lng') double? longitude,
-    @Query('radius') double? radius,
-    @Query('category') String? category,
-    @Query('search') String? search,
-    @Query('page') int? page,
-    @Query('limit') int? limit,
-  );
-  
-  @GET('/restaurants/{id}')
-  Future<Map<String, dynamic>> getRestaurant(@Path('id') String restaurantId);
-  
-  @GET('/restaurants/{id}/menu')
-  Future<Map<String, dynamic>> getRestaurantMenu(@Path('id') String restaurantId);
-  
-  @GET('/restaurants/{id}/reviews')
-  Future<Map<String, dynamic>> getRestaurantReviews(
-    @Path('id') String restaurantId,
-    @Query('page') int? page,
-    @Query('limit') int? limit,
-  );
-  
-  // Order Endpoints
-  @POST('/orders')
-  Future<Map<String, dynamic>> createOrder(
-    @Header('Authorization') String token,
-    @Body() Map<String, dynamic> orderData,
-  );
-  
-  @GET('/orders')
-  Future<Map<String, dynamic>> getUserOrders(
-    @Header('Authorization') String token,
-    @Query('page') int? page,
-    @Query('limit') int? limit,
-    @Query('status') String? status,
-  );
-  
-  @GET('/orders/{id}')
-  Future<Map<String, dynamic>> getOrder(
-    @Header('Authorization') String token,
-    @Path('id') String orderId,
-  );
-  
-  @PUT('/orders/{id}/cancel')
-  Future<Map<String, dynamic>> cancelOrder(
-    @Header('Authorization') String token,
-    @Path('id') String orderId,
-  );
-  
-  @POST('/orders/{id}/rate')
-  Future<Map<String, dynamic>> rateOrder(
-    @Header('Authorization') String token,
-    @Path('id') String orderId,
-    @Body() Map<String, dynamic> ratingData,
-  );
-  
-  // Payment Endpoints
-  @POST('/payments/create-intent')
-  Future<Map<String, dynamic>> createPaymentIntent(
-    @Header('Authorization') String token,
-    @Body() Map<String, dynamic> paymentData,
-  );
-  
-  @POST('/payments/confirm')
-  Future<Map<String, dynamic>> confirmPayment(
-    @Header('Authorization') String token,
-    @Body() Map<String, dynamic> paymentData,
-  );
-  
-  // Search Endpoints
-  @GET('/search/restaurants')
-  Future<Map<String, dynamic>> searchRestaurants(
-    @Query('q') String query,
-    @Query('lat') double? latitude,
-    @Query('lng') double? longitude,
-    @Query('radius') double? radius,
-    @Query('category') String? category,
-    @Query('page') int? page,
-    @Query('limit') int? limit,
-  );
-  
-  @GET('/search/dishes')
-  Future<Map<String, dynamic>> searchDishes(
-    @Query('q') String query,
-    @Query('lat') double? latitude,
-    @Query('lng') double? longitude,
-    @Query('radius') double? radius,
-    @Query('page') int? page,
-    @Query('limit') int? limit,
-  );
-  
-  // Notification Endpoints
-  @GET('/notifications')
-  Future<Map<String, dynamic>> getNotifications(
-    @Header('Authorization') String token,
-    @Query('page') int? page,
-    @Query('limit') int? limit,
-  );
-  
-  @PUT('/notifications/{id}/read')
-  Future<Map<String, dynamic>> markNotificationAsRead(
-    @Header('Authorization') String token,
-    @Path('id') String notificationId,
-  );
-  
-  @PUT('/notifications/read-all')
-  Future<Map<String, dynamic>> markAllNotificationsAsRead(
-    @Header('Authorization') String token,
-  );
-}
+  late Dio _dio;
 
-class ApiClientFactory {
-  static ApiClient create() {
-    final dio = Dio();
-    
+  void initialize() {
+    _dio = Dio(BaseOptions(
+      baseUrl: AppConstants.baseUrl + AppConstants.apiVersion,
+      connectTimeout: Duration(milliseconds: AppConstants.connectionTimeout),
+      receiveTimeout: Duration(milliseconds: AppConstants.receiveTimeout),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'X-API-Key': AppConstants.apiKey,
+      },
+    ));
+
     // Add interceptors
-    dio.interceptors.addAll([
+    _dio.interceptors.addAll([
       _AuthInterceptor(),
       _LoggingInterceptor(),
       _ErrorInterceptor(),
+      _RetryInterceptor(),
     ]);
-    
-    // Configure timeouts
-    dio.options.connectTimeout = const Duration(milliseconds: AppConstants.connectionTimeout);
-    dio.options.receiveTimeout = const Duration(milliseconds: AppConstants.receiveTimeout);
-    
-    return ApiClient(dio);
+  }
+
+  Dio get dio => _dio;
+
+  // REST API Methods
+  Future<Response> get(String path, {Map<String, dynamic>? queryParameters}) async {
+    try {
+      return await _dio.get(path, queryParameters: queryParameters);
+    } catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  Future<Response> post(String path, {dynamic data, Map<String, dynamic>? queryParameters}) async {
+    try {
+      return await _dio.post(path, data: data, queryParameters: queryParameters);
+    } catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  Future<Response> put(String path, {dynamic data, Map<String, dynamic>? queryParameters}) async {
+    try {
+      return await _dio.put(path, data: data, queryParameters: queryParameters);
+    } catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  Future<Response> delete(String path, {Map<String, dynamic>? queryParameters}) async {
+    try {
+      return await _dio.delete(path, queryParameters: queryParameters);
+    } catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  // WebSocket connection
+  Future<Response> connectWebSocket(String path) async {
+    try {
+      return await _dio.get(path);
+    } catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  // File upload
+  Future<Response> uploadFile(String path, String filePath, {Map<String, dynamic>? data}) async {
+    try {
+      FormData formData = FormData.fromMap({
+        'file': await MultipartFile.fromFile(filePath),
+        ...?data,
+      });
+      return await _dio.post(path, data: formData);
+    } catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  // Error handling
+  Exception _handleError(dynamic error) {
+    if (error is DioException) {
+      switch (error.type) {
+        case DioExceptionType.connectionTimeout:
+          return Exception('Connection timeout. Please check your internet connection.');
+        case DioExceptionType.sendTimeout:
+          return Exception('Request timeout. Please try again.');
+        case DioExceptionType.receiveTimeout:
+          return Exception('Response timeout. Please try again.');
+        case DioExceptionType.badResponse:
+          return Exception('Server error: ${error.response?.statusCode}');
+        case DioExceptionType.cancel:
+          return Exception('Request cancelled');
+        case DioExceptionType.connectionError:
+          return Exception('Connection error. Please check your internet connection.');
+        default:
+          return Exception('An unexpected error occurred');
+      }
+    }
+    return Exception('An unexpected error occurred');
   }
 }
 
+// Auth Interceptor
 class _AuthInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    // Add authorization header if token exists
-    // This will be implemented when we add token management
-    super.onRequest(options, handler);
+    // Add auth token if available
+    final token = _getAuthToken();
+    if (token != null) {
+      options.headers['Authorization'] = 'Bearer $token';
+    }
+    handler.next(options);
+  }
+
+  String? _getAuthToken() {
+    // Get token from secure storage
+    return null; // Implement token retrieval
   }
 }
 
+// Logging Interceptor
 class _LoggingInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    print('REQUEST[${options.method}] => PATH: ${options.path}');
-    super.onRequest(options, handler);
+    if (kDebugMode) {
+      debugPrint('🚀 REQUEST[${options.method}] => PATH: ${options.path}');
+      debugPrint('Headers: ${options.headers}');
+      debugPrint('Data: ${options.data}');
+    }
+    handler.next(options);
   }
-  
+
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    print('RESPONSE[${response.statusCode}] => PATH: ${response.requestOptions.path}');
-    super.onResponse(response, handler);
+    if (kDebugMode) {
+      debugPrint('✅ RESPONSE[${response.statusCode}] => PATH: ${response.requestOptions.path}');
+      debugPrint('Data: ${response.data}');
+    }
+    handler.next(response);
   }
-  
+
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    print('ERROR[${err.response?.statusCode}] => PATH: ${err.requestOptions.path}');
-    super.onError(err, handler);
+    if (kDebugMode) {
+      debugPrint('❌ ERROR[${err.response?.statusCode}] => PATH: ${err.requestOptions.path}');
+      debugPrint('Message: ${err.message}');
+    }
+    handler.next(err);
   }
 }
 
+// Error Interceptor
 class _ErrorInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    switch (err.type) {
-      case DioExceptionType.connectionTimeout:
-      case DioExceptionType.sendTimeout:
-      case DioExceptionType.receiveTimeout:
-        throw TimeoutException(
-          message: 'Connection timeout. Please check your internet connection.',
-          code: err.response?.statusCode,
-        );
-      case DioExceptionType.badResponse:
-        final statusCode = err.response?.statusCode;
-        final message = err.response?.data?['message'] ?? 'An error occurred';
-        
-        switch (statusCode) {
-          case 400:
-            throw ValidationException(message: message, code: statusCode);
-          case 401:
-            throw AuthenticationException(message: message, code: statusCode);
-          case 403:
-            throw AuthorizationException(message: message, code: statusCode);
-          case 404:
-            throw NotFoundException(message: message, code: statusCode);
-          case 500:
-            throw ServerException(message: message, code: statusCode);
-          default:
-            throw ServerException(message: message, code: statusCode);
-        }
-      case DioExceptionType.cancel:
-        throw NetworkException(message: 'Request was cancelled', code: err.response?.statusCode);
-      case DioExceptionType.connectionError:
-        throw NetworkException(message: 'No internet connection', code: err.response?.statusCode);
-      case DioExceptionType.badCertificate:
-        throw NetworkException(message: 'Certificate error', code: err.response?.statusCode);
-      case DioExceptionType.unknown:
-        throw UnknownException(message: 'An unknown error occurred', code: err.response?.statusCode);
+    // Handle specific error cases
+    if (err.response?.statusCode == 401) {
+      // Handle unauthorized access
+      _handleUnauthorized();
+    } else if (err.response?.statusCode == 403) {
+      // Handle forbidden access
+      _handleForbidden();
+    } else if (err.response?.statusCode == 500) {
+      // Handle server error
+      _handleServerError();
     }
+    handler.next(err);
   }
+
+  void _handleUnauthorized() {
+    // Clear auth token and redirect to login
+    debugPrint('Unauthorized access - redirecting to login');
+  }
+
+  void _handleForbidden() {
+    // Handle forbidden access
+    debugPrint('Forbidden access');
+  }
+
+  void _handleServerError() {
+    // Handle server error
+    debugPrint('Server error');
+  }
+}
+
+// Retry Interceptor
+class _RetryInterceptor extends Interceptor {
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
+    if (_shouldRetry(err)) {
+      try {
+        final response = await _retry(err.requestOptions);
+        handler.resolve(response);
+        return;
+      } catch (e) {
+        // If retry fails, continue with original error
+      }
+    }
+    handler.next(err);
+  }
+
+  bool _shouldRetry(DioException err) {
+    return err.type == DioExceptionType.connectionTimeout ||
+           err.type == DioExceptionType.sendTimeout ||
+           err.type == DioExceptionType.receiveTimeout ||
+           (err.response?.statusCode != null && err.response!.statusCode! >= 500);
+  }
+
+  Future<Response> _retry(RequestOptions requestOptions) async {
+    final dio = Dio();
+    return await dio.request(
+      requestOptions.path,
+      data: requestOptions.data,
+      queryParameters: requestOptions.queryParameters,
+      options: Options(
+        method: requestOptions.method,
+        headers: requestOptions.headers,
+      ),
+    );
+  }
+}
+
+// API Endpoints
+class ApiEndpoints {
+  // Auth endpoints
+  static const String login = '/auth/login';
+  static const String register = '/auth/register';
+  static const String logout = '/auth/logout';
+  static const String refreshToken = '/auth/refresh';
+  static const String forgotPassword = '/auth/forgot-password';
+  static const String resetPassword = '/auth/reset-password';
+
+  // User endpoints
+  static const String profile = '/user/profile';
+  static const String updateProfile = '/user/profile';
+  static const String deleteAccount = '/user/account';
+
+  // Restaurant endpoints
+  static const String restaurants = '/restaurants';
+  static const String restaurantById = '/restaurants/{id}';
+  static const String searchRestaurants = '/restaurants/search';
+  static const String restaurantCategories = '/restaurants/categories';
+
+  // Menu endpoints
+  static const String menuByRestaurant = '/restaurants/{id}/menu';
+  static const String menuItems = '/menu/items';
+  static const String searchMenuItems = '/menu/search';
+
+  // Order endpoints
+  static const String orders = '/orders';
+  static const String orderById = '/orders/{id}';
+  static const String createOrder = '/orders';
+  static const String cancelOrder = '/orders/{id}/cancel';
+  static const String reorder = '/orders/{id}/reorder';
+
+  // Payment endpoints
+  static const String paymentMethods = '/payments/methods';
+  static const String createPayment = '/payments/create';
+  static const String confirmPayment = '/payments/confirm';
+  static const String refundPayment = '/payments/{id}/refund';
+
+  // Tracking endpoints
+  static const String trackOrder = '/orders/{id}/track';
+  static const String trackingUpdates = '/orders/{id}/tracking';
+
+  // Review endpoints
+  static const String reviews = '/reviews';
+  static const String createReview = '/reviews';
+  static const String updateReview = '/reviews/{id}';
+  static const String deleteReview = '/reviews/{id}';
+
+  // Search endpoints
+  static const String search = '/search';
+  static const String searchSuggestions = '/search/suggestions';
+  static const String searchHistory = '/search/history';
+
+  // Notification endpoints
+  static const String notifications = '/notifications';
+  static const String markAsRead = '/notifications/{id}/read';
+  static const String notificationSettings = '/notifications/settings';
+
+  // Analytics endpoints
+  static const String analytics = '/analytics';
+  static const String userBehavior = '/analytics/behavior';
+  static const String performance = '/analytics/performance';
+
+  // WebSocket endpoints
+  static const String wsConnection = '/ws';
+  static const String wsOrders = '/ws/orders';
+  static const String wsTracking = '/ws/tracking';
+  static const String wsNotifications = '/ws/notifications';
 }

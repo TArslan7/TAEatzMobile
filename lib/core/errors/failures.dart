@@ -119,3 +119,10 @@ class NotificationFailure extends Failure {
     super.code,
   });
 }
+
+class UnimplementedFailure extends Failure {
+  const UnimplementedFailure({
+    super.message = 'Feature not implemented',
+    super.code,
+  });
+}

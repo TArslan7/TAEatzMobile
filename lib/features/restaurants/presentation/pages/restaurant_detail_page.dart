@@ -10,6 +10,12 @@ import '../../../menu/presentation/bloc/menu_event.dart';
 import '../../../menu/presentation/bloc/menu_state.dart';
 import '../../../menu/presentation/widgets/menu_item_card.dart';
 import '../../../menu/presentation/widgets/menu_category_tab.dart';
+import '../../../menu/domain/entities/menu_entity.dart';
+import '../../../cart/presentation/bloc/cart_bloc.dart';
+import '../../../cart/presentation/bloc/cart_state.dart';
+import '../../../cart/presentation/bloc/cart_event.dart';
+import '../../../cart/domain/entities/cart_entity.dart';
+import '../../../cart/presentation/pages/cart_page.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
   final RestaurantEntity restaurant;
@@ -69,16 +75,67 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage>
   }
 
   void _onAddToCart(String itemId) {
-    setState(() {
-      _cartItems[itemId] = (_cartItems[itemId] ?? 0) + 1;
-    });
-    
-    context.showSnackBar('Added to cart');
+    // Find the menu item
+    final menuState = context.read<MenuBloc>().state;
+    if (menuState is MenuLoaded) {
+      MenuItemEntity? menuItem;
+      for (final category in menuState.menu.categories) {
+        final item = category.items.firstWhere(
+          (item) => item.id == itemId,
+          orElse: () => throw StateError('Item not found'),
+        );
+        if (item.id == itemId) {
+          menuItem = item;
+          break;
+        }
+      }
+      
+      if (menuItem != null) {
+        final cartItem = CartItemEntity(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          menuItemId: menuItem.id,
+          name: menuItem.name,
+          description: menuItem.description,
+          imageUrl: menuItem.imageUrl ?? '',
+          basePrice: menuItem.price,
+          quantity: 1,
+          selectedOptions: [],
+          totalPrice: menuItem.price,
+        );
+        
+        context.read<CartBloc>().add(AddItemToCart(cartItem));
+        context.showSnackBar('${menuItem.name} added to cart!');
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: BlocBuilder<CartBloc, CartState>(
+        builder: (context, cartState) {
+          int itemCount = 0;
+          if (cartState is CartLoaded) {
+            itemCount = cartState.cart.itemCount;
+          }
+          
+          if (itemCount == 0) return const SizedBox.shrink();
+          
+          return FloatingActionButton.extended(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const CartPage(),
+                ),
+              );
+            },
+            backgroundColor: AppTheme.primaryColor,
+            foregroundColor: Colors.white,
+            icon: const Icon(Icons.shopping_cart),
+            label: Text('Cart ($itemCount)'),
+          );
+        },
+      ),
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [

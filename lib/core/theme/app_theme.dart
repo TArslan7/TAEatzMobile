@@ -1,25 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'theme_manager.dart';
 
 class AppTheme {
-  // Colors
-  static const Color primaryColor = Color(0xFFE53E3E);
-  static const Color primaryDarkColor = Color(0xFFC53030);
-  static const Color primaryLightColor = Color(0xFFFC8181);
-  static const Color secondaryColor = Color(0xFF38B2AC);
-  static const Color accentColor = Color(0xFFF6AD55);
+  // Light Mode Colors
+  static const Color lightBackground = Color(0xFFFFFFFF); // #FFFFFF
+  static const Color lightPrimaryRed = Color(0xFFFF3B30); // #FF3B30
+  static const Color lightSecondaryGreen = Color(0xFF27AE60); // #27AE60
+  static const Color lightTextDark = Color(0xFF1C1C1C); // #1C1C1C
+  static const Color lightAccentYellow = Color(0xFFFFB84D); // #FFB84D
+
+  // Dark Mode Colors
+  static const Color darkBackground = Color(0xFF0D0D0D); // #0D0D0D
+  static const Color darkPrimaryRed = Color(0xFFFF6B35); // #FF6B35
+  static const Color darkSecondaryGreen = Color(0xFF2ECC71); // #2ECC71
+  static const Color darkTextLight = Color(0xFFF5F5F5); // #F5F5F5
+  static const Color darkAccentYellow = Color(0xFFFFCC66); // #FFCC66
+
+  // Legacy colors for backward compatibility
+  static const Color primaryColor = lightPrimaryRed;
+  static const Color primaryDarkColor = darkPrimaryRed;
+  static const Color primaryLightColor = Color(0x4DFF3B30); // lightPrimaryRed.withOpacity(0.3)
+  static const Color secondaryColor = lightSecondaryGreen;
+  static const Color accentColor = lightAccentYellow;
   
-  static const Color backgroundColor = Color(0xFFF7FAFC);
-  static const Color surfaceColor = Color(0xFFFFFFFF);
-  static const Color cardColor = Color(0xFFFFFFFF);
+  static const Color backgroundColor = lightBackground;
+  static const Color surfaceColor = lightBackground;
+  static const Color cardColor = lightBackground;
   
-  static const Color textPrimaryColor = Color(0xFF1A202C);
+  static const Color textPrimaryColor = lightTextDark;
   static const Color textSecondaryColor = Color(0xFF4A5568);
   static const Color textTertiaryColor = Color(0xFF718096);
   
-  static const Color successColor = Color(0xFF48BB78);
-  static const Color warningColor = Color(0xFFED8936);
-  static const Color errorColor = Color(0xFFE53E3E);
+  static const Color successColor = lightSecondaryGreen;
+  static const Color warningColor = lightAccentYellow;
+  static const Color errorColor = lightPrimaryRed;
   static const Color infoColor = Color(0xFF4299E1);
   
   static const Color borderColor = Color(0xFFE2E8F0);
@@ -300,17 +315,130 @@ class AppTheme {
       useMaterial3: true,
       brightness: Brightness.dark,
       colorScheme: const ColorScheme.dark(
-        primary: primaryColor,
-        primaryContainer: primaryDarkColor,
-        secondary: secondaryColor,
-        surface: Color(0xFF1A202C),
-        error: errorColor,
+        primary: darkPrimaryRed,
+        primaryContainer: const Color(0x4DFF6B35), // darkPrimaryRed.withOpacity(0.3)
+        secondary: darkSecondaryGreen,
+        surface: Color(0xFF1A1A1A),
+        surfaceContainerHighest: Color(0xFF2D2D2D),
+        error: darkPrimaryRed,
         onPrimary: Colors.white,
         onSecondary: Colors.white,
-        onSurface: Colors.white,
+        onSurface: darkTextLight,
         onError: Colors.white,
+        background: darkBackground,
       ),
-      // Add dark theme specific styles here
+      scaffoldBackgroundColor: darkBackground,
+      textTheme: TextTheme(
+        headlineLarge: heading1.copyWith(color: darkTextLight),
+        headlineMedium: heading2.copyWith(color: darkTextLight),
+        headlineSmall: heading3.copyWith(color: darkTextLight),
+        titleLarge: heading4.copyWith(color: darkTextLight),
+        titleMedium: heading5.copyWith(color: darkTextLight),
+        titleSmall: heading6.copyWith(color: darkTextLight),
+        bodyLarge: bodyLarge.copyWith(color: darkTextLight),
+        bodyMedium: bodyMedium.copyWith(color: darkTextLight),
+        bodySmall: bodySmall.copyWith(color: darkTextLight.withOpacity(0.7)),
+        labelLarge: button,
+        labelMedium: buttonSmall,
+        labelSmall: caption.copyWith(color: darkTextLight.withOpacity(0.6)),
+      ),
+      appBarTheme: AppBarTheme(
+        backgroundColor: darkBackground,
+        foregroundColor: darkTextLight,
+        elevation: 0,
+        centerTitle: true,
+        titleTextStyle: heading6.copyWith(color: darkTextLight),
+        iconTheme: const IconThemeData(color: darkTextLight),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: darkPrimaryRed,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(
+            horizontal: spacingL,
+            vertical: spacingM,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(radiusM),
+          ),
+          textStyle: button,
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: darkPrimaryRed,
+          side: const BorderSide(color: darkPrimaryRed),
+          padding: const EdgeInsets.symmetric(
+            horizontal: spacingL,
+            vertical: spacingM,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(radiusM),
+          ),
+          textStyle: button,
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: darkPrimaryRed,
+          padding: const EdgeInsets.symmetric(
+            horizontal: spacingM,
+            vertical: spacingS,
+          ),
+          textStyle: button,
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: const Color(0xFF2D2D2D),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(radiusM),
+          borderSide: const BorderSide(color: Color(0xFF404040)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(radiusM),
+          borderSide: const BorderSide(color: Color(0xFF404040)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(radiusM),
+          borderSide: const BorderSide(color: darkPrimaryRed, width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(radiusM),
+          borderSide: const BorderSide(color: darkPrimaryRed),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(radiusM),
+          borderSide: const BorderSide(color: darkPrimaryRed, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: spacingM,
+          vertical: spacingM,
+        ),
+        hintStyle: bodyMedium.copyWith(color: darkTextLight.withOpacity(0.5)),
+      ),
+      cardTheme: CardThemeData(
+        color: const Color(0xFF2D2D2D),
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radiusL),
+          side: const BorderSide(color: Color(0xFF404040)),
+        ),
+        margin: const EdgeInsets.all(spacingS),
+      ),
+      dividerTheme: DividerThemeData(
+        color: const Color(0xFF404040),
+        thickness: 1,
+        space: 1,
+      ),
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: Color(0xFF1A1A1A),
+        selectedItemColor: darkPrimaryRed,
+        unselectedItemColor: Color(0xFF9CA3AF),
+        type: BottomNavigationBarType.fixed,
+        elevation: 8,
+      ),
     );
   }
 }
