@@ -3,17 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/theme_manager.dart';
-import '../../../../core/utils/extensions.dart';
 import '../bloc/profile_bloc.dart';
 import '../bloc/profile_event.dart';
 import '../bloc/profile_state.dart';
 import '../widgets/profile_header.dart';
 import '../widgets/profile_menu_item.dart';
 import '../widgets/profile_section.dart';
-import 'edit_profile_page.dart';
-import 'preferences_page.dart';
-import 'address_page.dart';
-import 'security_page.dart';
+import 'settings_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -46,10 +42,12 @@ class _ProfilePageState extends State<ProfilePage> {
             actions: [
               IconButton(
                 icon: Icon(
-                  Icons.brightness_6_outlined,
+                  Icons.notifications_outlined,
                   color: themeManager.textColor,
                 ),
-                onPressed: () => themeManager.toggleTheme(),
+                onPressed: () {
+                  _showNotificationsDialog(themeManager);
+                },
               ),
               IconButton(
                 icon: Icon(
@@ -57,7 +55,11 @@ class _ProfilePageState extends State<ProfilePage> {
                   color: themeManager.textColor,
                 ),
                 onPressed: () {
-                  // TODO: Navigate to settings
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const SettingsPage(),
+                    ),
+                  );
                 },
               ),
             ],
@@ -123,96 +125,49 @@ class _ProfilePageState extends State<ProfilePage> {
                   children: [
                     ProfileHeader(user: state.user),
                     const SizedBox(height: AppTheme.spacingL),
+                    
+                    // Quick Actions
                     ProfileSection(
-                      title: 'Account',
+                      title: 'Quick Actions',
                       children: [
                         ProfileMenuItem(
-                          icon: Icons.person_outline,
-                          title: 'Edit Profile',
-                          subtitle: 'Update your personal information',
+                          icon: Icons.settings,
+                          title: 'Settings',
+                          subtitle: 'App preferences and configuration',
                           onTap: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) => EditProfilePage(user: state.user),
+                                builder: (context) => const SettingsPage(),
                               ),
                             );
                           },
                         ),
                         ProfileMenuItem(
-                          icon: Icons.location_on_outlined,
-                          title: 'Address',
-                          subtitle: 'Manage your delivery addresses',
+                          icon: Icons.history,
+                          title: 'Order History',
+                          subtitle: 'View your past orders',
                           onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => AddressPage(user: state.user),
-                              ),
-                            );
+                            // Navigate to orders tab
+                            DefaultTabController.of(context).animateTo(2);
                           },
                         ),
                         ProfileMenuItem(
                           icon: Icons.favorite_outline,
-                          title: 'Preferences',
-                          subtitle: 'Dietary preferences and allergies',
+                          title: 'Favorites',
+                          subtitle: 'Your favorite restaurants',
                           onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => PreferencesPage(user: state.user),
-                              ),
+                            // TODO: Navigate to favorites
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Favorites coming soon!')),
                             );
                           },
                         ),
                       ],
                     ),
+                    
                     const SizedBox(height: AppTheme.spacingL),
-                    ProfileSection(
-                      title: 'Security',
-                      children: [
-                        ProfileMenuItem(
-                          icon: Icons.lock_outline,
-                          title: 'Password & Security',
-                          subtitle: 'Change password and security settings',
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => SecurityPage(user: state.user),
-                              ),
-                            );
-                          },
-                        ),
-                        ProfileMenuItem(
-                          icon: Icons.phone_outlined,
-                          title: 'Phone Number',
-                          subtitle: state.user.phoneNumber ?? 'Add phone number',
-                          onTap: () {
-                            // TODO: Navigate to phone verification
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppTheme.spacingL),
-                    ProfileSection(
-                      title: 'Support',
-                      children: [
-                        ProfileMenuItem(
-                          icon: Icons.help_outline,
-                          title: 'Help & Support',
-                          subtitle: 'Get help and contact support',
-                          onTap: () {
-                            // TODO: Navigate to help page
-                          },
-                        ),
-                        ProfileMenuItem(
-                          icon: Icons.info_outline,
-                          title: 'About',
-                          subtitle: 'App version and information',
-                          onTap: () {
-                            // TODO: Navigate to about page
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppTheme.spacingL),
+                    
+                    // Account Actions
                     ProfileSection(
                       title: 'Account',
                       children: [
@@ -225,17 +180,9 @@ class _ProfilePageState extends State<ProfilePage> {
                             _showSignOutDialog();
                           },
                         ),
-                        ProfileMenuItem(
-                          icon: Icons.delete_outline,
-                          title: 'Delete Account',
-                          subtitle: 'Permanently delete your account',
-                          textColor: AppTheme.errorColor,
-                          onTap: () {
-                            _showDeleteAccountDialog();
-                          },
-                        ),
                       ],
                     ),
+                    
                     const SizedBox(height: AppTheme.spacingXL),
                   ],
                 ),
@@ -248,6 +195,110 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
       },
+    );
+  }
+
+  void _showNotificationsDialog(ThemeManager themeManager) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: themeManager.cardColor,
+        title: Text(
+          'Notifications',
+          style: TextStyle(color: themeManager.textColor),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: Icon(
+                Icons.notifications_active,
+                color: themeManager.primaryRed,
+              ),
+              title: Text(
+                'Order Updates',
+                style: TextStyle(color: themeManager.textColor),
+              ),
+              subtitle: Text(
+                'Get notified when your order status changes',
+                style: TextStyle(color: themeManager.textColor.withOpacity(0.7)),
+              ),
+              trailing: Switch(
+                value: true,
+                onChanged: (value) {
+                  // TODO: Implement order notifications toggle
+                },
+                activeColor: themeManager.primaryRed,
+              ),
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.local_offer,
+                color: themeManager.primaryRed,
+              ),
+              title: Text(
+                'Promotions',
+                style: TextStyle(color: themeManager.textColor),
+              ),
+              subtitle: Text(
+                'Receive special offers and discounts',
+                style: TextStyle(color: themeManager.textColor.withOpacity(0.7)),
+              ),
+              trailing: Switch(
+                value: true,
+                onChanged: (value) {
+                  // TODO: Implement promotion notifications toggle
+                },
+                activeColor: themeManager.primaryRed,
+              ),
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.delivery_dining,
+                color: themeManager.primaryRed,
+              ),
+              title: Text(
+                'Delivery Updates',
+                style: TextStyle(color: themeManager.textColor),
+              ),
+              subtitle: Text(
+                'Track your delivery in real-time',
+                style: TextStyle(color: themeManager.textColor.withOpacity(0.7)),
+              ),
+              trailing: Switch(
+                value: true,
+                onChanged: (value) {
+                  // TODO: Implement delivery notifications toggle
+                },
+                activeColor: themeManager.primaryRed,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(
+              'Close',
+              style: TextStyle(color: themeManager.primaryRed),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const SettingsPage(),
+                ),
+              );
+            },
+            child: Text(
+              'Settings',
+              style: TextStyle(color: themeManager.primaryRed),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -277,28 +328,4 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  void _showDeleteAccountDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Account'),
-        content: const Text(
-          'Are you sure you want to delete your account? This action cannot be undone.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              context.read<ProfileBloc>().add(const DeleteAccount());
-            },
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
-    );
-  }
 }

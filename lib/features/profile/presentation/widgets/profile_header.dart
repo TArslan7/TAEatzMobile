@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:provider/provider.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/theme_manager.dart';
 import '../../domain/entities/user_entity.dart';
+import 'avatar_selector.dart';
 
 class ProfileHeader extends StatelessWidget {
   final UserEntity user;
@@ -13,122 +15,129 @@ class ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(AppTheme.spacingM),
-      padding: const EdgeInsets.all(AppTheme.spacingL),
-      decoration: BoxDecoration(
-        color: AppTheme.surfaceColor,
-        borderRadius: BorderRadius.circular(AppTheme.radiusM),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Stack(
-            children: [
-              CircleAvatar(
-                radius: 50,
-                backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
-                child: user.profileImageUrl != null
-                    ? ClipOval(
-                        child: CachedNetworkImage(
-                          imageUrl: user.profileImageUrl!,
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => const CircularProgressIndicator(),
-                          errorWidget: (context, url, error) => Text(
-                            user.initials,
-                            style: AppTheme.heading4.copyWith(
-                              color: AppTheme.primaryColor,
-                            ),
-                          ),
-                        ),
-                      )
-                    : Text(
-                        user.initials,
-                        style: AppTheme.heading4.copyWith(
-                          color: AppTheme.primaryColor,
-                        ),
-                      ),
+    return Consumer<ThemeManager>(
+      builder: (context, themeManager, child) {
+        return Container(
+          margin: const EdgeInsets.all(AppTheme.spacingM),
+          padding: const EdgeInsets.all(AppTheme.spacingL),
+          decoration: BoxDecoration(
+            color: themeManager.cardColor,
+            borderRadius: BorderRadius.circular(AppTheme.radiusM),
+            boxShadow: [
+              BoxShadow(
+                color: themeManager.shadowColor,
+                blurRadius: 10,
+                offset: const Offset(0, 2),
               ),
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: GestureDetector(
-                  onTap: () {
-                    // TODO: Implement image picker
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Image picker not implemented yet')),
-                    );
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryColor,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: AppTheme.surfaceColor,
-                        width: 2,
-                      ),
-                    ),
-                    child: const Icon(
-                      Icons.camera_alt,
-                      color: Colors.white,
-                      size: 16,
+            ],
+          ),
+          child: Column(
+            children: [
+              Stack(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      _showAvatarSelector(context, themeManager);
+                    },
+                    child: AvatarWidget(
+                      avatarId: user.avatarId,
+                      size: 100,
+                      initials: user.initials,
                     ),
                   ),
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: () {
+                        _showAvatarSelector(context, themeManager);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: themeManager.primaryRed,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: themeManager.cardColor,
+                            width: 2,
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.edit,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppTheme.spacingM),
+              Text(
+                user.fullName,
+                style: AppTheme.heading5.copyWith(
+                  color: themeManager.textColor,
                 ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: AppTheme.spacingS),
+              Text(
+                user.email,
+                style: AppTheme.bodyMedium.copyWith(
+                  color: themeManager.textColor.withOpacity(0.7),
+                ),
+                textAlign: TextAlign.center,
+              ),
+              if (user.phoneNumber != null) ...[
+                const SizedBox(height: AppTheme.spacingS),
+                Text(
+                  user.phoneNumber!,
+                  style: AppTheme.bodyMedium.copyWith(
+                    color: themeManager.textColor.withOpacity(0.7),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+              const SizedBox(height: AppTheme.spacingM),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildVerificationBadge(
+                    icon: Icons.email,
+                    isVerified: user.isEmailVerified,
+                    label: 'Email',
+                    themeManager: themeManager,
+                  ),
+                  const SizedBox(width: AppTheme.spacingM),
+                  _buildVerificationBadge(
+                    icon: Icons.phone,
+                    isVerified: user.isPhoneVerified,
+                    label: 'Phone',
+                    themeManager: themeManager,
+                  ),
+                ],
               ),
             ],
           ),
-          const SizedBox(height: AppTheme.spacingM),
-          Text(
-            user.fullName,
-            style: AppTheme.heading5,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppTheme.spacingS),
-          Text(
-            user.email,
-            style: AppTheme.bodyMedium.copyWith(
-              color: AppTheme.textSecondaryColor,
+        );
+      },
+    );
+  }
+
+  void _showAvatarSelector(BuildContext context, ThemeManager themeManager) {
+    showDialog(
+      context: context,
+      builder: (context) => AvatarSelector(
+        currentAvatar: user.avatarId,
+        onAvatarSelected: (avatarId) {
+          // TODO: Update user avatar in backend
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Avatar updated to: $avatarId'),
+              backgroundColor: themeManager.primaryRed,
             ),
-            textAlign: TextAlign.center,
-          ),
-          if (user.phoneNumber != null) ...[
-            const SizedBox(height: AppTheme.spacingS),
-            Text(
-              user.phoneNumber!,
-              style: AppTheme.bodyMedium.copyWith(
-                color: AppTheme.textSecondaryColor,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-          const SizedBox(height: AppTheme.spacingM),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _buildVerificationBadge(
-                icon: Icons.email,
-                isVerified: user.isEmailVerified,
-                label: 'Email',
-              ),
-              const SizedBox(width: AppTheme.spacingM),
-              _buildVerificationBadge(
-                icon: Icons.phone,
-                isVerified: user.isPhoneVerified,
-                label: 'Phone',
-              ),
-            ],
-          ),
-        ],
+          );
+        },
       ),
     );
   }
@@ -137,6 +146,7 @@ class ProfileHeader extends StatelessWidget {
     required IconData icon,
     required bool isVerified,
     required String label,
+    required ThemeManager themeManager,
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(
@@ -146,7 +156,7 @@ class ProfileHeader extends StatelessWidget {
       decoration: BoxDecoration(
         color: isVerified
             ? AppTheme.successColor.withOpacity(0.1)
-            : AppTheme.textSecondaryColor.withOpacity(0.1),
+            : themeManager.textColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(AppTheme.radiusS),
       ),
       child: Row(
@@ -155,20 +165,20 @@ class ProfileHeader extends StatelessWidget {
           Icon(
             icon,
             size: 16,
-            color: isVerified ? AppTheme.successColor : AppTheme.textSecondaryColor,
+            color: isVerified ? AppTheme.successColor : themeManager.textColor.withOpacity(0.7),
           ),
           const SizedBox(width: 4),
           Text(
             label,
             style: AppTheme.caption.copyWith(
-              color: isVerified ? AppTheme.successColor : AppTheme.textSecondaryColor,
+              color: isVerified ? AppTheme.successColor : themeManager.textColor.withOpacity(0.7),
             ),
           ),
           const SizedBox(width: 4),
           Icon(
             isVerified ? Icons.check_circle : Icons.cancel,
             size: 16,
-            color: isVerified ? AppTheme.successColor : AppTheme.textSecondaryColor,
+            color: isVerified ? AppTheme.successColor : themeManager.textColor.withOpacity(0.7),
           ),
         ],
       ),

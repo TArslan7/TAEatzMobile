@@ -32,10 +32,27 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
   late AnimationController _slideController;
   late AnimationController _pulseController;
   late AnimationController _staggerController;
+  late AnimationController _eatDrinkController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
   late Animation<double> _pulseAnimation;
   late Animation<double> _staggerAnimation;
+  late Animation<double> _eatDrinkAnimation;
+
+  // Function to get time-based greeting
+  String _getTimeBasedGreeting() {
+    final hour = DateTime.now().hour;
+    
+    if (hour >= 5 && hour < 12) {
+      return 'Good morning! 🌅';
+    } else if (hour >= 12 && hour < 17) {
+      return 'Good afternoon! ☀️';
+    } else if (hour >= 17 && hour < 21) {
+      return 'Good evening! 🌆';
+    } else {
+      return 'Good night! 🌙';
+    }
+  }
 
   @override
   void initState() {
@@ -56,6 +73,10 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
     );
     _staggerController = AnimationController(
       duration: const Duration(milliseconds: 1200),
+      vsync: this,
+    );
+    _eatDrinkController = AnimationController(
+      duration: const Duration(milliseconds: 5000),
       vsync: this,
     );
     
@@ -91,11 +112,20 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
       curve: Curves.easeOutCubic,
     ));
     
+    _eatDrinkAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _eatDrinkController,
+      curve: Curves.easeInOut,
+    ));
+    
     // Start animations
     _fadeController.forward();
     _slideController.forward();
     _pulseController.repeat(reverse: true);
     _staggerController.forward();
+    _eatDrinkController.repeat(reverse: true);
     
     // Load initial data
     context.read<RestaurantBloc>().add(const LoadRestaurants());
@@ -109,6 +139,7 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
     _slideController.dispose();
     _pulseController.dispose();
     _staggerController.dispose();
+    _eatDrinkController.dispose();
     super.dispose();
   }
 
@@ -224,7 +255,7 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
                                   child: SlideTransition(
                                     position: _slideAnimation,
                                     child: Text(
-                                      'Good morning! 👋',
+                                      _getTimeBasedGreeting(),
                                       style: TextStyle(
                                         color: (themeManager?.textColor ?? Colors.grey).withOpacity(0.7),
                                         fontSize: 16,
@@ -238,14 +269,37 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
                                   opacity: _fadeAnimation,
                                   child: SlideTransition(
                                     position: _slideAnimation,
-                                    child: Text(
-                                      'What would you like\nto eat today?',
-                                      style: TextStyle(
-                                        color: themeManager.textColor,
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.bold,
-                                        height: 1.2,
-                                      ),
+                                    child: AnimatedBuilder(
+                                      animation: _eatDrinkAnimation,
+                                      builder: (context, child) {
+                                        final isEat = _eatDrinkAnimation.value < 0.5;
+                                        final text = isEat ? 'eat' : 'drink';
+                                        final emoji = isEat ? '🍽️' : '🥤';
+                                        
+                                        // Smooth transition effect
+                                        final fadeValue = isEat 
+                                            ? (1.0 - (_eatDrinkAnimation.value * 2)).clamp(0.0, 1.0)
+                                            : ((_eatDrinkAnimation.value - 0.5) * 2).clamp(0.0, 1.0);
+                                        
+                                        return AnimatedOpacity(
+                                          opacity: fadeValue,
+                                          duration: const Duration(milliseconds: 500),
+                                          child: AnimatedSlide(
+                                            offset: Offset(0, isEat ? 0.0 : 0.1),
+                                            duration: const Duration(milliseconds: 500),
+                                            curve: Curves.easeInOut,
+                                            child: Text(
+                                              'What would you like\nto $text today? $emoji',
+                                              style: TextStyle(
+                                                color: themeManager.textColor,
+                                                fontSize: 22,
+                                                fontWeight: FontWeight.bold,
+                                                height: 1.2,
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
                                     ),
                                   ),
                                 ),

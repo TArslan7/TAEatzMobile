@@ -7,6 +7,7 @@ class UserEntity extends Equatable {
   final String lastName;
   final String? phoneNumber;
   final String? profileImageUrl;
+  final String? avatarId;
   final DateTime? dateOfBirth;
   final String? address;
   final String? city;
@@ -26,6 +27,7 @@ class UserEntity extends Equatable {
     required this.lastName,
     this.phoneNumber,
     this.profileImageUrl,
+    this.avatarId,
     this.dateOfBirth,
     this.address,
     this.city,
@@ -51,6 +53,7 @@ class UserEntity extends Equatable {
     lastName,
     phoneNumber,
     profileImageUrl,
+    avatarId,
     dateOfBirth,
     address,
     city,
@@ -71,6 +74,7 @@ class UserEntity extends Equatable {
     String? lastName,
     String? phoneNumber,
     String? profileImageUrl,
+    String? avatarId,
     DateTime? dateOfBirth,
     String? address,
     String? city,
@@ -90,6 +94,7 @@ class UserEntity extends Equatable {
       lastName: lastName ?? this.lastName,
       phoneNumber: phoneNumber ?? this.phoneNumber,
       profileImageUrl: profileImageUrl ?? this.profileImageUrl,
+      avatarId: avatarId ?? this.avatarId,
       dateOfBirth: dateOfBirth ?? this.dateOfBirth,
       address: address ?? this.address,
       city: city ?? this.city,
