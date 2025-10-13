@@ -229,6 +229,23 @@ class _ProfilePageState extends State<ProfilePage> {
                       title: 'Settings',
                       children: [
                         ProfileMenuItem(
+                          icon: Icons.brightness_6_outlined,
+                          title: 'Dark Mode',
+                          subtitle: themeManager.themeMode == ThemeMode.dark 
+                              ? 'Dark mode enabled' 
+                              : 'Light mode enabled',
+                          trailing: Switch(
+                            value: themeManager.themeMode == ThemeMode.dark,
+                            onChanged: (value) {
+                              themeManager.toggleTheme();
+                            },
+                            activeColor: themeManager.primaryRed,
+                          ),
+                          onTap: () {
+                            themeManager.toggleTheme();
+                          },
+                        ),
+                        ProfileMenuItem(
                           icon: Icons.flag_outlined,
                           title: 'Country',
                           subtitle: 'Netherlands',
