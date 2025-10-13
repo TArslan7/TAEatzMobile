@@ -121,11 +121,6 @@ class HomeGreetingSection extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           _buildActionButton(
-            icon: Icons.brightness_6_outlined,
-            onTap: () => themeManager.toggleTheme(),
-          ),
-          const SizedBox(width: 4),
-          _buildActionButton(
             icon: Icons.notifications_outlined,
             onTap: () {},
             badge: true,

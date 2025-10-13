@@ -57,27 +57,23 @@ class _OrdersPageState extends State<OrdersPage>
             actions: [
               IconButton(
                 icon: Icon(
-                  Icons.brightness_6_outlined,
-                  color: themeManager.textColor,
-                ),
-                onPressed: () => themeManager.toggleTheme(),
-              ),
-              IconButton(
-                icon: Icon(
                   Icons.filter_list,
                   color: themeManager.textColor,
                 ),
                 onPressed: () {
-              _showFilterDialog();
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () {
-              context.read<OrdersBloc>().add(const RefreshOrders());
-            },
-          ),
-        ],
+                  _showFilterDialog();
+                },
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.refresh,
+                  color: themeManager.textColor,
+                ),
+                onPressed: () {
+                  context.read<OrdersBloc>().add(const RefreshOrders());
+                },
+              ),
+            ],
         bottom: TabBar(
           controller: _tabController,
           isScrollable: true,
