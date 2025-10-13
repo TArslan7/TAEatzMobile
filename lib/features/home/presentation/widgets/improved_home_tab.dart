@@ -7,6 +7,8 @@ import '../../../restaurants/presentation/bloc/restaurant_bloc.dart';
 import '../../../restaurants/presentation/bloc/restaurant_event.dart';
 import '../../../restaurants/presentation/bloc/restaurant_state.dart';
 import '../../../restaurants/presentation/pages/restaurant_detail_page.dart';
+import '../../../location/domain/entities/location_entity.dart';
+import '../../../location/presentation/pages/location_selection_page.dart';
 
 class ImprovedHomeTab extends StatefulWidget {
   const ImprovedHomeTab({super.key});
@@ -21,6 +23,7 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
   String? _selectedCategory;
   List<String> _categories = [];
   final Map<String, bool> _favorites = {};
+  LocationEntity? _selectedLocation;
   
   late AnimationController _fadeController;
   late AnimationController _slideController;
@@ -41,6 +44,25 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
       return 'Good evening! 🌆';
     } else {
       return 'Good night! 🌙';
+    }
+  }
+
+  // Open location selection page
+  void _openLocationSelection() async {
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => LocationSelectionPage(
+          currentLocation: _selectedLocation,
+        ),
+      ),
+    );
+    
+    if (result != null && result is LocationEntity) {
+      setState(() {
+        _selectedLocation = result;
+      });
+      // TODO: Save selected location to preferences
+      // TODO: Reload restaurants based on location
     }
   }
 
@@ -209,6 +231,46 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                // Location Display
+                                GestureDetector(
+                                  onTap: _openLocationSelection,
+                                  child: FadeTransition(
+                                    opacity: _fadeAnimation,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(vertical: 4),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.location_on,
+                                            size: 18,
+                                            color: themeManager.textColor,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Flexible(
+                                            child: Text(
+                                              _selectedLocation?.displayAddress ?? 'Select location',
+                                              style: TextStyle(
+                                                color: themeManager.textColor,
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Icon(
+                                            Icons.keyboard_arrow_down,
+                                            size: 18,
+                                            color: themeManager.textColor,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
                                 FadeTransition(
                                   opacity: _fadeAnimation,
                                   child: SlideTransition(
