@@ -119,12 +119,13 @@ class _ProfilePageState extends State<ProfilePage> {
               onRefresh: () async {
                 context.read<ProfileBloc>().add(const RefreshProfile());
               },
+              color: themeManager.primaryRed,
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
                   children: [
                     ProfileHeader(user: state.user),
-                    const SizedBox(height: AppTheme.spacingL),
+                    const SizedBox(height: AppTheme.spacingXL),
                     
                     // Quick Actions
                     ProfileSection(

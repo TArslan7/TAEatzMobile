@@ -18,104 +18,79 @@ class ProfileHeader extends StatelessWidget {
     return Consumer<ThemeManager>(
       builder: (context, themeManager, child) {
         return Container(
-          margin: const EdgeInsets.all(AppTheme.spacingM),
-          padding: const EdgeInsets.all(AppTheme.spacingL),
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(
+            vertical: AppTheme.spacingXL * 2,
+            horizontal: AppTheme.spacingL,
+          ),
           decoration: BoxDecoration(
-            color: themeManager.cardColor,
-            borderRadius: BorderRadius.circular(AppTheme.radiusM),
-            boxShadow: [
-              BoxShadow(
-                color: themeManager.shadowColor,
-                blurRadius: 10,
-                offset: const Offset(0, 2),
-              ),
-            ],
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                themeManager.primaryRed.withOpacity(0.15),
+                Colors.black.withOpacity(0.05),
+                themeManager.primaryRed.withOpacity(0.08),
+              ],
+              stops: const [0.0, 0.5, 1.0],
+            ),
           ),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // Circular Avatar
               Stack(
+                alignment: Alignment.center,
                 children: [
+                  // Subtle glow effect behind avatar
+                  Container(
+                    width: 96,
+                    height: 96,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: themeManager.primaryRed.withOpacity(0.2),
+                          blurRadius: 20,
+                          spreadRadius: 5,
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Avatar
                   GestureDetector(
                     onTap: () {
                       _showAvatarSelector(context, themeManager);
                     },
-                    child: AvatarWidget(
-                      avatarId: user.avatarId,
-                      size: 100,
-                      initials: user.initials,
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: GestureDetector(
-                      onTap: () {
-                        _showAvatarSelector(context, themeManager);
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: themeManager.primaryRed,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: themeManager.cardColor,
-                            width: 2,
-                          ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.3),
+                          width: 3,
                         ),
-                        child: const Icon(
-                          Icons.edit,
-                          color: Colors.white,
-                          size: 16,
-                        ),
+                      ),
+                      child: AvatarWidget(
+                        avatarId: user.avatarId,
+                        size: 90,
+                        initials: user.initials,
                       ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: AppTheme.spacingM),
-              Text(
-                user.fullName,
-                style: AppTheme.heading5.copyWith(
-                  color: themeManager.textColor,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: AppTheme.spacingS),
+              
+              const SizedBox(height: AppTheme.spacingL),
+              
+              // User Email
               Text(
                 user.email,
-                style: AppTheme.bodyMedium.copyWith(
-                  color: themeManager.textColor.withOpacity(0.7),
+                style: AppTheme.bodyLarge.copyWith(
+                  color: themeManager.textColor.withOpacity(0.85),
+                  fontWeight: FontWeight.w500,
+                  letterSpacing: 0.3,
                 ),
                 textAlign: TextAlign.center,
-              ),
-              if (user.phoneNumber != null) ...[
-                const SizedBox(height: AppTheme.spacingS),
-                Text(
-                  user.phoneNumber!,
-                  style: AppTheme.bodyMedium.copyWith(
-                    color: themeManager.textColor.withOpacity(0.7),
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-              const SizedBox(height: AppTheme.spacingM),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildVerificationBadge(
-                    icon: Icons.email,
-                    isVerified: user.isEmailVerified,
-                    label: 'Email',
-                    themeManager: themeManager,
-                  ),
-                  const SizedBox(width: AppTheme.spacingM),
-                  _buildVerificationBadge(
-                    icon: Icons.phone,
-                    isVerified: user.isPhoneVerified,
-                    label: 'Phone',
-                    themeManager: themeManager,
-                  ),
-                ],
               ),
             ],
           ),
@@ -138,49 +113,6 @@ class ProfileHeader extends StatelessWidget {
             ),
           );
         },
-      ),
-    );
-  }
-
-  Widget _buildVerificationBadge({
-    required IconData icon,
-    required bool isVerified,
-    required String label,
-    required ThemeManager themeManager,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppTheme.spacingS,
-        vertical: AppTheme.spacingXS,
-      ),
-      decoration: BoxDecoration(
-        color: isVerified
-            ? AppTheme.successColor.withOpacity(0.1)
-            : themeManager.textColor.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(AppTheme.radiusS),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            size: 16,
-            color: isVerified ? AppTheme.successColor : themeManager.textColor.withOpacity(0.7),
-          ),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: AppTheme.caption.copyWith(
-              color: isVerified ? AppTheme.successColor : themeManager.textColor.withOpacity(0.7),
-            ),
-          ),
-          const SizedBox(width: 4),
-          Icon(
-            isVerified ? Icons.check_circle : Icons.cancel,
-            size: 16,
-            color: isVerified ? AppTheme.successColor : themeManager.textColor.withOpacity(0.7),
-          ),
-        ],
       ),
     );
   }
