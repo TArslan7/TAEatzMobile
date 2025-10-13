@@ -9,7 +9,6 @@ import '../bloc/profile_state.dart';
 import '../widgets/profile_header.dart';
 import '../widgets/profile_menu_item.dart';
 import '../widgets/profile_section.dart';
-import 'settings_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -19,6 +18,11 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  bool _notificationsEnabled = true;
+  bool _emailNotificationsEnabled = true;
+  bool _locationEnabled = true;
+  String _selectedLanguage = 'English';
+
   @override
   void initState() {
     super.initState();
@@ -39,30 +43,6 @@ class _ProfilePageState extends State<ProfilePage> {
             backgroundColor: themeManager.cardColor,
             elevation: 0,
             iconTheme: IconThemeData(color: themeManager.textColor),
-            actions: [
-              IconButton(
-                icon: Icon(
-                  Icons.notifications_outlined,
-                  color: themeManager.textColor,
-                ),
-                onPressed: () {
-                  _showNotificationsDialog(themeManager);
-                },
-              ),
-              IconButton(
-                icon: Icon(
-                  Icons.settings,
-                  color: themeManager.textColor,
-                ),
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const SettingsPage(),
-                    ),
-                  );
-                },
-              ),
-            ],
           ),
           body: BlocBuilder<ProfileBloc, ProfileState>(
             builder: (context, state) {
@@ -127,37 +107,216 @@ class _ProfilePageState extends State<ProfilePage> {
                     ProfileHeader(user: state.user),
                     const SizedBox(height: AppTheme.spacingXL),
                     
+                    // Account Management
+                    ProfileSection(
+                      title: 'Account Management',
+                      children: [
+                        ProfileMenuItem(
+                          icon: Icons.person_outline,
+                          title: 'Edit Profile',
+                          subtitle: 'Update your personal information',
+                          trailing: Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                            color: themeManager.textColor.withOpacity(0.5),
+                          ),
+                          onTap: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Edit profile coming soon!')),
+                            );
+                          },
+                        ),
+                        ProfileMenuItem(
+                          icon: Icons.location_on_outlined,
+                          title: 'Delivery Addresses',
+                          subtitle: 'Manage your delivery addresses',
+                          trailing: Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                            color: themeManager.textColor.withOpacity(0.5),
+                          ),
+                          onTap: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Address management coming soon!')),
+                            );
+                          },
+                        ),
+                        ProfileMenuItem(
+                          icon: Icons.favorite_outline,
+                          title: 'Dietary Preferences',
+                          subtitle: 'Preferences and allergies',
+                          trailing: Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                            color: themeManager.textColor.withOpacity(0.5),
+                          ),
+                          onTap: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Preferences coming soon!')),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                    
+                    const SizedBox(height: AppTheme.spacingL),
+                    
+                    // Appearance Settings
+                    ProfileSection(
+                      title: 'Appearance',
+                      children: [
+                        ProfileMenuItem(
+                          icon: Icons.brightness_6_outlined,
+                          title: 'Dark Mode',
+                          subtitle: 'Switch between light and dark theme',
+                          trailing: Switch(
+                            value: themeManager.themeMode == ThemeMode.dark,
+                            onChanged: (value) {
+                              themeManager.toggleTheme();
+                            },
+                            activeColor: themeManager.primaryRed,
+                          ),
+                          onTap: () {
+                            themeManager.toggleTheme();
+                          },
+                        ),
+                        ProfileMenuItem(
+                          icon: Icons.language_outlined,
+                          title: 'Language',
+                          subtitle: _selectedLanguage,
+                          trailing: Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                            color: themeManager.textColor.withOpacity(0.5),
+                          ),
+                          onTap: () {
+                            _showLanguageDialog(themeManager);
+                          },
+                        ),
+                      ],
+                    ),
+                    
+                    const SizedBox(height: AppTheme.spacingL),
+                    
+                    // Notifications Settings
+                    ProfileSection(
+                      title: 'Notifications',
+                      children: [
+                        ProfileMenuItem(
+                          icon: Icons.notifications_outlined,
+                          title: 'Push Notifications',
+                          subtitle: 'Receive order updates and promotions',
+                          trailing: Switch(
+                            value: _notificationsEnabled,
+                            onChanged: (value) {
+                              setState(() {
+                                _notificationsEnabled = value;
+                              });
+                              _showNotificationSettings(themeManager);
+                            },
+                            activeColor: themeManager.primaryRed,
+                          ),
+                          onTap: () {
+                            setState(() {
+                              _notificationsEnabled = !_notificationsEnabled;
+                            });
+                            _showNotificationSettings(themeManager);
+                          },
+                        ),
+                        ProfileMenuItem(
+                          icon: Icons.email_outlined,
+                          title: 'Email Notifications',
+                          subtitle: 'Order confirmations and updates',
+                          trailing: Switch(
+                            value: _emailNotificationsEnabled,
+                            onChanged: (value) {
+                              setState(() {
+                                _emailNotificationsEnabled = value;
+                              });
+                            },
+                            activeColor: themeManager.primaryRed,
+                          ),
+                          onTap: () {
+                            setState(() {
+                              _emailNotificationsEnabled = !_emailNotificationsEnabled;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    
+                    const SizedBox(height: AppTheme.spacingL),
+                    
+                    // Privacy & Security
+                    ProfileSection(
+                      title: 'Privacy & Security',
+                      children: [
+                        ProfileMenuItem(
+                          icon: Icons.location_on_outlined,
+                          title: 'Location Services',
+                          subtitle: 'Allow location access for delivery',
+                          trailing: Switch(
+                            value: _locationEnabled,
+                            onChanged: (value) {
+                              setState(() {
+                                _locationEnabled = value;
+                              });
+                            },
+                            activeColor: themeManager.primaryRed,
+                          ),
+                          onTap: () {
+                            setState(() {
+                              _locationEnabled = !_locationEnabled;
+                            });
+                          },
+                        ),
+                        ProfileMenuItem(
+                          icon: Icons.lock_outline,
+                          title: 'Privacy Settings',
+                          subtitle: 'Manage your privacy preferences',
+                          trailing: Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                            color: themeManager.textColor.withOpacity(0.5),
+                          ),
+                          onTap: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Security settings coming soon!')),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                    
+                    const SizedBox(height: AppTheme.spacingL),
+                    
                     // Quick Actions
                     ProfileSection(
                       title: 'Quick Actions',
                       children: [
                         ProfileMenuItem(
-                          icon: Icons.settings,
-                          title: 'Settings',
-                          subtitle: 'App preferences and configuration',
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => const SettingsPage(),
-                              ),
-                            );
-                          },
-                        ),
-                        ProfileMenuItem(
                           icon: Icons.history,
                           title: 'Order History',
                           subtitle: 'View your past orders',
+                          trailing: Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                            color: themeManager.textColor.withOpacity(0.5),
+                          ),
                           onTap: () {
-                            // Navigate to orders tab
                             DefaultTabController.of(context).animateTo(2);
                           },
                         ),
                         ProfileMenuItem(
-                          icon: Icons.favorite_outline,
+                          icon: Icons.favorite,
                           title: 'Favorites',
                           subtitle: 'Your favorite restaurants',
+                          trailing: Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                            color: themeManager.textColor.withOpacity(0.5),
+                          ),
                           onTap: () {
-                            // TODO: Navigate to favorites
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Favorites coming soon!')),
                             );
@@ -168,9 +327,44 @@ class _ProfilePageState extends State<ProfilePage> {
                     
                     const SizedBox(height: AppTheme.spacingL),
                     
-                    // Account Actions
+                    // Support
                     ProfileSection(
-                      title: 'Account',
+                      title: 'Support',
+                      children: [
+                        ProfileMenuItem(
+                          icon: Icons.help_outline,
+                          title: 'Help & Support',
+                          subtitle: 'Get help and contact support',
+                          trailing: Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                            color: themeManager.textColor.withOpacity(0.5),
+                          ),
+                          onTap: () {
+                            _showHelpDialog(themeManager);
+                          },
+                        ),
+                        ProfileMenuItem(
+                          icon: Icons.info_outline,
+                          title: 'About',
+                          subtitle: 'App version and information',
+                          trailing: Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                            color: themeManager.textColor.withOpacity(0.5),
+                          ),
+                          onTap: () {
+                            _showAboutDialog(themeManager);
+                          },
+                        ),
+                      ],
+                    ),
+                    
+                    const SizedBox(height: AppTheme.spacingL),
+                    
+                    // Sign Out
+                    ProfileSection(
+                      title: 'Account Actions',
                       children: [
                         ProfileMenuItem(
                           icon: Icons.logout,
@@ -178,7 +372,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           subtitle: 'Sign out of your account',
                           textColor: AppTheme.errorColor,
                           onTap: () {
-                            _showSignOutDialog();
+                            _showSignOutDialog(themeManager);
                           },
                         ),
                       ],
@@ -199,82 +393,71 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  void _showNotificationsDialog(ThemeManager themeManager) {
+  void _showLanguageDialog(ThemeManager themeManager) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: themeManager.cardColor,
         title: Text(
-          'Notifications',
+          'Select Language',
           style: TextStyle(color: themeManager.textColor),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ListTile(
-              leading: Icon(
-                Icons.notifications_active,
-                color: themeManager.primaryRed,
-              ),
-              title: Text(
-                'Order Updates',
-                style: TextStyle(color: themeManager.textColor),
-              ),
-              subtitle: Text(
-                'Get notified when your order status changes',
-                style: TextStyle(color: themeManager.textColor.withOpacity(0.7)),
-              ),
-              trailing: Switch(
-                value: true,
-                onChanged: (value) {
-                  // TODO: Implement order notifications toggle
-                },
-                activeColor: themeManager.primaryRed,
-              ),
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.local_offer,
-                color: themeManager.primaryRed,
-              ),
-              title: Text(
-                'Promotions',
-                style: TextStyle(color: themeManager.textColor),
-              ),
-              subtitle: Text(
-                'Receive special offers and discounts',
-                style: TextStyle(color: themeManager.textColor.withOpacity(0.7)),
-              ),
-              trailing: Switch(
-                value: true,
-                onChanged: (value) {
-                  // TODO: Implement promotion notifications toggle
-                },
-                activeColor: themeManager.primaryRed,
-              ),
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.delivery_dining,
-                color: themeManager.primaryRed,
-              ),
-              title: Text(
-                'Delivery Updates',
-                style: TextStyle(color: themeManager.textColor),
-              ),
-              subtitle: Text(
-                'Track your delivery in real-time',
-                style: TextStyle(color: themeManager.textColor.withOpacity(0.7)),
-              ),
-              trailing: Switch(
-                value: true,
-                onChanged: (value) {
-                  // TODO: Implement delivery notifications toggle
-                },
-                activeColor: themeManager.primaryRed,
-              ),
-            ),
+            _buildLanguageOption('English', themeManager),
+            _buildLanguageOption('Nederlands', themeManager),
+            _buildLanguageOption('Español', themeManager),
+            _buildLanguageOption('Français', themeManager),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageOption(String language, ThemeManager themeManager) {
+    return ListTile(
+      title: Text(
+        language,
+        style: TextStyle(color: themeManager.textColor),
+      ),
+      trailing: _selectedLanguage == language
+          ? Icon(Icons.check, color: themeManager.primaryRed)
+          : null,
+      onTap: () {
+        setState(() {
+          _selectedLanguage = language;
+        });
+        Navigator.of(context).pop();
+      },
+    );
+  }
+
+  void _showNotificationSettings(ThemeManager themeManager) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          _notificationsEnabled 
+              ? 'Notifications enabled' 
+              : 'Notifications disabled',
+        ),
+        backgroundColor: themeManager.primaryRed,
+      ),
+    );
+  }
+
+  void _showHelpDialog(ThemeManager themeManager) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: themeManager.cardColor,
+        title: Text(
+          'Help & Support',
+          style: TextStyle(color: themeManager.textColor),
+        ),
+        content: Text(
+          'For support, please contact us at:\n\nEmail: support@taeatz.com\nPhone: +31 20 123 4567\n\nWe\'re here to help!',
+          style: TextStyle(color: themeManager.textColor.withOpacity(0.8)),
         ),
         actions: [
           TextButton(
@@ -284,17 +467,29 @@ class _ProfilePageState extends State<ProfilePage> {
               style: TextStyle(color: themeManager.primaryRed),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  void _showAboutDialog(ThemeManager themeManager) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: themeManager.cardColor,
+        title: Text(
+          'About TAEatz',
+          style: TextStyle(color: themeManager.textColor),
+        ),
+        content: Text(
+          'TAEatz Mobile App\nVersion 1.0.0\n\n© 2024 TAEatz. All rights reserved.\n\nDelivering delicious food to your doorstep!',
+          style: TextStyle(color: themeManager.textColor.withOpacity(0.8)),
+        ),
+        actions: [
           TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const SettingsPage(),
-                ),
-              );
-            },
+            onPressed: () => Navigator.of(context).pop(),
             child: Text(
-              'Settings',
+              'Close',
               style: TextStyle(color: themeManager.primaryRed),
             ),
           ),
@@ -303,26 +498,42 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  void _showSignOutDialog() {
+  void _showSignOutDialog(ThemeManager themeManager) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Sign Out'),
-        content: const Text('Are you sure you want to sign out?'),
+        backgroundColor: themeManager.cardColor,
+        title: Text(
+          'Sign Out',
+          style: TextStyle(color: themeManager.textColor),
+        ),
+        content: Text(
+          'Are you sure you want to sign out?',
+          style: TextStyle(color: themeManager.textColor.withOpacity(0.8)),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: themeManager.textColor.withOpacity(0.7)),
+            ),
           ),
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
               // TODO: Implement sign out
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Signed out successfully')),
+                SnackBar(
+                  content: const Text('Signed out successfully'),
+                  backgroundColor: themeManager.primaryRed,
+                ),
               );
             },
-            child: const Text('Sign Out'),
+            child: Text(
+              'Sign Out',
+              style: TextStyle(color: themeManager.primaryRed),
+            ),
           ),
         ],
       ),
