@@ -31,6 +31,7 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
   List<String> _categories = [];
   final Map<String, bool> _favorites = {};
   LocationEntity? _selectedLocation;
+  bool _isDeliveryMode = true;
 
   // Animation Controllers
   late AnimationController _fadeController;
@@ -161,6 +162,22 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
     );
   }
 
+  void _onModeChanged(bool isDelivery) {
+    setState(() {
+      _isDeliveryMode = isDelivery;
+    });
+    
+    // Show feedback
+    context.showSnackBar(
+      isDelivery
+          ? 'Switched to Delivery mode 🚴'
+          : 'Switched to Takeaway mode 🛍️',
+    );
+    
+    // TODO: Filter restaurants based on delivery/takeaway availability
+    // TODO: Update pricing based on mode (no delivery fee for takeaway)
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeManager>(
@@ -180,6 +197,8 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
                   themeManager: themeManager,
                   selectedLocation: _selectedLocation,
                   onTap: _openLocationSelection,
+                  isDeliveryMode: _isDeliveryMode,
+                  onModeChanged: _onModeChanged,
                 ),
 
                 // Scrollable Content with Pull-to-Refresh
