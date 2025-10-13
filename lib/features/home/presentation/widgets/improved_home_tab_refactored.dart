@@ -31,7 +31,6 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
   List<String> _categories = [];
   final Map<String, bool> _favorites = {};
   LocationEntity? _selectedLocation;
-  bool _isDeliveryMode = true;
 
   // Animation Controllers
   late AnimationController _fadeController;
@@ -94,15 +93,6 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
     context.read<RestaurantBloc>().add(const LoadCategories());
   }
 
-  Future<void> _refreshHomeScreen() async {
-    // Trigger refresh with animation
-    context.read<RestaurantBloc>().add(const LoadRestaurants());
-    context.read<RestaurantBloc>().add(const LoadCategories());
-    
-    // Wait for data to load
-    await Future.delayed(const Duration(milliseconds: 800));
-  }
-
   String _getTimeBasedGreeting() {
     final hour = DateTime.now().hour;
     if (hour >= 5 && hour < 12) return 'Good morning! 🌅';
@@ -162,22 +152,6 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
     );
   }
 
-  void _onModeChanged(bool isDelivery) {
-    setState(() {
-      _isDeliveryMode = isDelivery;
-    });
-    
-    // Show feedback
-    context.showSnackBar(
-      isDelivery
-          ? 'Switched to Delivery mode 🚴'
-          : 'Switched to Takeaway mode 🛍️',
-    );
-    
-    // TODO: Filter restaurants based on delivery/takeaway availability
-    // TODO: Update pricing based on mode (no delivery fee for takeaway)
-  }
-
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeManager>(
@@ -197,82 +171,71 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
                   themeManager: themeManager,
                   selectedLocation: _selectedLocation,
                   onTap: _openLocationSelection,
-                  isDeliveryMode: _isDeliveryMode,
-                  onModeChanged: _onModeChanged,
                 ),
 
-                // Scrollable Content with Pull-to-Refresh
+                // Scrollable Content
                 Expanded(
-                  child: RefreshIndicator(
-                    onRefresh: _refreshHomeScreen,
-                    color: themeManager.primaryRed,
-                    backgroundColor: themeManager.cardColor,
-                    displacement: 40,
-                    strokeWidth: 3,
-                    child: CustomScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(
-                        parent: BouncingScrollPhysics(),
+                  child: CustomScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    slivers: [
+                      // Greeting Section
+                      SliverToBoxAdapter(
+                        child: HomeGreetingSection(
+                          themeManager: themeManager,
+                          fadeAnimation: _fadeAnimation,
+                          slideAnimation: _slideAnimation,
+                          eatDrinkAnimation: _eatDrinkAnimation,
+                          getTimeBasedGreeting: _getTimeBasedGreeting,
+                        ),
                       ),
-                      slivers: [
-                        // Greeting Section
-                        SliverToBoxAdapter(
-                          child: HomeGreetingSection(
-                            themeManager: themeManager,
-                            fadeAnimation: _fadeAnimation,
-                            slideAnimation: _slideAnimation,
-                            eatDrinkAnimation: _eatDrinkAnimation,
-                            getTimeBasedGreeting: _getTimeBasedGreeting,
-                          ),
-                        ),
 
-                        // Search Section
-                        SliverToBoxAdapter(
-                          child: HomeSearchSection(
-                            themeManager: themeManager,
-                            searchController: _searchController,
-                            onSearch: _onSearch,
-                            fadeAnimation: _fadeAnimation,
-                            slideAnimation: _slideAnimation,
-                          ),
+                      // Search Section
+                      SliverToBoxAdapter(
+                        child: HomeSearchSection(
+                          themeManager: themeManager,
+                          searchController: _searchController,
+                          onSearch: _onSearch,
+                          fadeAnimation: _fadeAnimation,
+                          slideAnimation: _slideAnimation,
                         ),
+                      ),
 
-                        // Quick Stats Section
-                        SliverToBoxAdapter(
-                          child: HomeStatsSection(
-                            fadeAnimation: _fadeAnimation,
-                            slideAnimation: _slideAnimation,
-                          ),
+                      // Quick Stats Section
+                      SliverToBoxAdapter(
+                        child: HomeStatsSection(
+                          fadeAnimation: _fadeAnimation,
+                          slideAnimation: _slideAnimation,
                         ),
+                      ),
 
-                        // Categories Section
-                        SliverToBoxAdapter(
-                          child: HomeCategoriesSection(
-                            fadeAnimation: _fadeAnimation,
-                            slideAnimation: _slideAnimation,
-                            selectedCategory: _selectedCategory,
-                            onCategorySelected: _onCategorySelected,
-                            categories: _categories,
-                          ),
+                      // Categories Section
+                      SliverToBoxAdapter(
+                        child: HomeCategoriesSection(
+                          fadeAnimation: _fadeAnimation,
+                          slideAnimation: _slideAnimation,
+                          selectedCategory: _selectedCategory,
+                          onCategorySelected: _onCategorySelected,
+                          categories: _categories,
                         ),
+                      ),
 
-                        // Featured Restaurants Section
-                        SliverToBoxAdapter(
-                          child: HomeRestaurantsSection(
-                            fadeAnimation: _fadeAnimation,
-                            slideAnimation: _slideAnimation,
-                            themeManager: themeManager,
-                            favorites: _favorites,
-                            onRestaurantTap: _onRestaurantTap,
-                            onFavoriteTap: _onFavoriteTap,
-                          ),
+                      // Featured Restaurants Section
+                      SliverToBoxAdapter(
+                        child: HomeRestaurantsSection(
+                          fadeAnimation: _fadeAnimation,
+                          slideAnimation: _slideAnimation,
+                          themeManager: themeManager,
+                          favorites: _favorites,
+                          onRestaurantTap: _onRestaurantTap,
+                          onFavoriteTap: _onFavoriteTap,
                         ),
+                      ),
 
-                        // Bottom Spacing for navigation bar
-                        const SliverToBoxAdapter(
-                          child: SizedBox(height: 100),
-                        ),
-                      ],
-                    ),
+                      // Bottom Spacing for navigation bar
+                      const SliverToBoxAdapter(
+                        child: SizedBox(height: 100),
+                      ),
+                    ],
                   ),
                 ),
               ],
