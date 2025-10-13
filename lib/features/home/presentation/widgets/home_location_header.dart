@@ -65,25 +65,31 @@ class HomeLocationHeader extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 2),
-                        Text(
-                          selectedLocation?.displayAddress ?? 'Select your location',
-                          style: TextStyle(
-                            color: themeManager.textColor,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.2,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                selectedLocation?.displayAddress ?? 'Select your location',
+                                style: TextStyle(
+                                  color: themeManager.textColor,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.2,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Icon(
+                              Icons.keyboard_arrow_down,
+                              size: 18,
+                              color: themeManager.textColor,
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Icon(
-                    Icons.keyboard_arrow_down,
-                    size: 20,
-                    color: themeManager.textColor,
                   ),
                 ],
               ),
