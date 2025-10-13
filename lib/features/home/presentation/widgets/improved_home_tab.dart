@@ -215,7 +215,16 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
   // Fixed Location Header - Always visible at top
   Widget _buildFixedLocationHeader(ThemeManager themeManager) {
     return Container(
-      color: themeManager.primaryRed,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            themeManager.primaryRed,
+            themeManager.primaryRed.withOpacity(0.98),
+          ],
+        ),
+      ),
       child: SafeArea(
         bottom: false,
         child: Material(
@@ -223,31 +232,55 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
           child: InkWell(
             onTap: _openLocationSelection,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.location_on,
-                    size: 18,
-                    color: themeManager.textColor,
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.location_on,
+                      size: 16,
+                      color: themeManager.textColor,
+                    ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 10),
                   Expanded(
-                    child: Text(
-                      _selectedLocation?.displayAddress ?? 'Select your location',
-                      style: TextStyle(
-                        color: themeManager.textColor,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Delivery to',
+                          style: TextStyle(
+                            color: themeManager.textColor.withOpacity(0.7),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          _selectedLocation?.displayAddress ?? 'Select your location',
+                          style: TextStyle(
+                            color: themeManager.textColor,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.2,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(width: 8),
                   Icon(
                     Icons.keyboard_arrow_down,
-                    size: 18,
+                    size: 20,
                     color: themeManager.textColor,
                   ),
                 ],
@@ -274,15 +307,15 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                themeManager.primaryRed,
-                themeManager.primaryRed.withOpacity(0.95),
+                themeManager.primaryRed.withOpacity(0.98),
+                themeManager.primaryRed.withOpacity(0.96),
               ],
             ),
           ),
           child: SafeArea(
             top: false,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.start,
