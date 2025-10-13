@@ -173,27 +173,37 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
       builder: (context, themeManager, child) {
         return Scaffold(
           backgroundColor: themeManager.backgroundColor,
-          body: CustomScrollView(
-            physics: const BouncingScrollPhysics(),
-            slivers: [
-              // Modern App Bar with Dynamic Gradient
-              _buildModernAppBar(themeManager),
+          body: Column(
+            children: [
+              // Fixed Location Header
+              _buildFixedLocationHeader(themeManager),
               
-              // Hero Search Section
-              _buildHeroSearchSection(themeManager),
-              
-              // Quick Stats Cards
-              _buildQuickStatsSection(themeManager),
-              
-              // Categories with Enhanced Design
-              _buildEnhancedCategoriesSection(themeManager),
-              
-              // Featured Restaurants with Modern Cards
-              _buildFeaturedRestaurantsSection(themeManager),
-              
-              // Bottom Spacing
-              const SliverToBoxAdapter(
-                child: SizedBox(height: 100),
+              // Scrollable Content
+              Expanded(
+                child: CustomScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  slivers: [
+                    // Modern App Bar with Dynamic Gradient
+                    _buildModernAppBar(themeManager),
+                    
+                    // Hero Search Section
+                    _buildHeroSearchSection(themeManager),
+                    
+                    // Quick Stats Cards
+                    _buildQuickStatsSection(themeManager),
+                    
+                    // Categories with Enhanced Design
+                    _buildEnhancedCategoriesSection(themeManager),
+                    
+                    // Featured Restaurants with Modern Cards
+                    _buildFeaturedRestaurantsSection(themeManager),
+                    
+                    // Bottom Spacing
+                    const SliverToBoxAdapter(
+                      child: SizedBox(height: 100),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -202,10 +212,53 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
     );
   }
 
+  // Fixed Location Header - Always visible at top
+  Widget _buildFixedLocationHeader(ThemeManager themeManager) {
+    return Container(
+      color: themeManager.primaryRed,
+      child: SafeArea(
+        bottom: false,
+        child: GestureDetector(
+          onTap: _openLocationSelection,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.location_on,
+                  size: 20,
+                  color: themeManager.textColor,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    _selectedLocation?.displayAddress ?? 'Select location',
+                    style: TextStyle(
+                      color: themeManager.textColor,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Icon(
+                  Icons.keyboard_arrow_down,
+                  size: 20,
+                  color: themeManager.textColor,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   // Modern App Bar with Gradient Background
   Widget _buildModernAppBar(ThemeManager themeManager) {
     return SliverAppBar(
-      expandedHeight: 200,
+      expandedHeight: 180,
       floating: false,
       pinned: true,
       backgroundColor: Colors.transparent,
@@ -216,6 +269,7 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
             color: themeManager.primaryRed,
           ),
           child: SafeArea(
+            top: false,
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
@@ -231,46 +285,6 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // Location Display
-                                GestureDetector(
-                                  onTap: _openLocationSelection,
-                                  child: FadeTransition(
-                                    opacity: _fadeAnimation,
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(vertical: 4),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(
-                                            Icons.location_on,
-                                            size: 18,
-                                            color: themeManager.textColor,
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Flexible(
-                                            child: Text(
-                                              _selectedLocation?.displayAddress ?? 'Select location',
-                                              style: TextStyle(
-                                                color: themeManager.textColor,
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Icon(
-                                            Icons.keyboard_arrow_down,
-                                            size: 18,
-                                            color: themeManager.textColor,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
                                 FadeTransition(
                                   opacity: _fadeAnimation,
                                   child: SlideTransition(
