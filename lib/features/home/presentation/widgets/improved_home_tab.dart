@@ -218,36 +218,40 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
       color: themeManager.primaryRed,
       child: SafeArea(
         bottom: false,
-        child: GestureDetector(
-          onTap: _openLocationSelection,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.location_on,
-                  size: 18,
-                  color: themeManager.textColor,
-                ),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    _selectedLocation?.displayAddress ?? 'Select location',
-                    style: TextStyle(
-                      color: themeManager.textColor,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: _openLocationSelection,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.location_on,
+                    size: 18,
+                    color: themeManager.textColor,
                   ),
-                ),
-                Icon(
-                  Icons.keyboard_arrow_down,
-                  size: 18,
-                  color: themeManager.textColor,
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      _selectedLocation?.displayAddress ?? 'Select your location',
+                      style: TextStyle(
+                        color: themeManager.textColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Icon(
+                    Icons.keyboard_arrow_down,
+                    size: 18,
+                    color: themeManager.textColor,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -255,114 +259,47 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
     );
   }
 
-  // Modern App Bar with Gradient Background
+  // Structured App Bar Header
   Widget _buildModernAppBar(ThemeManager themeManager) {
     return SliverAppBar(
-      expandedHeight: 90,
+      expandedHeight: 110,
       floating: false,
       pinned: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: themeManager.primaryRed,
       elevation: 0,
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
           decoration: BoxDecoration(
-            color: themeManager.primaryRed,
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                themeManager.primaryRed,
+                themeManager.primaryRed.withOpacity(0.95),
+              ],
+            ),
           ),
           child: SafeArea(
             top: false,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Content Row
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+                      // Left Side - Greeting and Main Text
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            FadeTransition(
-                              opacity: _fadeAnimation,
-                              child: SlideTransition(
-                                position: _slideAnimation,
-                                child: Text(
-                                  _getTimeBasedGreeting(),
-                                  style: TextStyle(
-                                    color: themeManager.textColor.withOpacity(0.7),
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            FadeTransition(
-                              opacity: _fadeAnimation,
-                              child: SlideTransition(
-                                position: _slideAnimation,
-                                child: AnimatedBuilder(
-                                  animation: _eatDrinkAnimation,
-                                  builder: (context, child) {
-                                    final isEat = _eatDrinkAnimation.value < 0.5;
-                                    final text = isEat ? 'eat' : 'drink';
-                                    final emoji = isEat ? '🍽️' : '🥤';
-                                    
-                                    // Smooth transition effect
-                                    final fadeValue = isEat 
-                                        ? (1.0 - (_eatDrinkAnimation.value * 2)).clamp(0.0, 1.0)
-                                        : ((_eatDrinkAnimation.value - 0.5) * 2).clamp(0.0, 1.0);
-                                    
-                                    return AnimatedOpacity(
-                                      opacity: fadeValue,
-                                      duration: const Duration(milliseconds: 500),
-                                      child: AnimatedSlide(
-                                        offset: Offset(0, isEat ? 0.0 : 0.1),
-                                        duration: const Duration(milliseconds: 500),
-                                        curve: Curves.easeInOut,
-                                        child: Text(
-                                          'What would you like to $text? $emoji',
-                                          style: TextStyle(
-                                            color: themeManager.textColor,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            height: 1.0,
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                        child: _buildGreetingSection(themeManager),
                       ),
-                      const SizedBox(width: 6),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          _buildActionButton(
-                            icon: Icons.brightness_6_outlined,
-                            onTap: () => themeManager.toggleTheme(),
-                            themeManager: themeManager,
-                          ),
-                          const SizedBox(width: 3),
-                          _buildActionButton(
-                            icon: Icons.notifications_outlined,
-                            onTap: () {},
-                            badge: true,
-                            themeManager: themeManager,
-                          ),
-                          const SizedBox(width: 3),
-                          _buildActionButton(
-                            icon: Icons.shopping_cart_outlined,
-                            onTap: () {},
-                            badge: true,
-                            themeManager: themeManager,
-                          ),
-                        ],
-                      ),
+                      
+                      const SizedBox(width: 12),
+                      
+                      // Right Side - Action Buttons
+                      _buildActionButtons(themeManager),
                     ],
                   ),
                 ],
@@ -370,6 +307,104 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  // Greeting Section Widget
+  Widget _buildGreetingSection(ThemeManager themeManager) {
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: SlideTransition(
+        position: _slideAnimation,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Time-based greeting
+            Text(
+              _getTimeBasedGreeting(),
+              style: TextStyle(
+                color: themeManager.textColor.withOpacity(0.8),
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                letterSpacing: 0.3,
+              ),
+            ),
+            const SizedBox(height: 4),
+            
+            // Animated main message
+            AnimatedBuilder(
+              animation: _eatDrinkAnimation,
+              builder: (context, child) {
+                final isEat = _eatDrinkAnimation.value < 0.5;
+                final text = isEat ? 'eat' : 'drink';
+                final emoji = isEat ? '🍽️' : '🥤';
+                
+                final fadeValue = isEat 
+                    ? (1.0 - (_eatDrinkAnimation.value * 2)).clamp(0.0, 1.0)
+                    : ((_eatDrinkAnimation.value - 0.5) * 2).clamp(0.0, 1.0);
+                
+                return AnimatedOpacity(
+                  opacity: fadeValue,
+                  duration: const Duration(milliseconds: 500),
+                  child: AnimatedSlide(
+                    offset: Offset(0, isEat ? 0.0 : 0.05),
+                    duration: const Duration(milliseconds: 500),
+                    curve: Curves.easeInOut,
+                    child: Text(
+                      'What would you like to $text? $emoji',
+                      style: TextStyle(
+                        color: themeManager.textColor,
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                        height: 1.2,
+                        letterSpacing: -0.3,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Action Buttons Widget
+  Widget _buildActionButtons(ThemeManager themeManager) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.all(4),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildActionButton(
+            icon: Icons.brightness_6_outlined,
+            onTap: () => themeManager.toggleTheme(),
+            themeManager: themeManager,
+          ),
+          const SizedBox(width: 4),
+          _buildActionButton(
+            icon: Icons.notifications_outlined,
+            onTap: () {},
+            badge: true,
+            themeManager: themeManager,
+          ),
+          const SizedBox(width: 4),
+          _buildActionButton(
+            icon: Icons.shopping_cart_outlined,
+            onTap: () {},
+            badge: true,
+            themeManager: themeManager,
+          ),
+        ],
       ),
     );
   }
