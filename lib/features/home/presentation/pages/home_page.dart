@@ -10,11 +10,11 @@ import '../../../restaurants/presentation/bloc/restaurant_event.dart';
 import '../../../restaurants/presentation/bloc/restaurant_state.dart';
 import '../../../restaurants/presentation/widgets/restaurant_card.dart';
 import '../../../restaurants/presentation/widgets/category_chip.dart';
-import '../../../search/presentation/pages/search_page.dart';
 import '../../../restaurants/presentation/widgets/restaurant_loading_shimmer.dart';
 import '../widgets/improved_home_tab.dart';
 import '../../../orders/presentation/pages/orders_page.dart';
 import '../../../profile/presentation/pages/profile_page.dart';
+import '../../../profile/presentation/pages/achievements_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -29,7 +29,7 @@ class _HomePageState extends State<HomePage> {
 
   final List<Widget> _pages = [
     const ImprovedHomeTab(),
-    const SearchTab(),
+    const AchievementsPage(),
     const OrdersPage(),
     const ProfilePage(),
   ];
@@ -106,9 +106,9 @@ class _HomePageState extends State<HomePage> {
                   label: 'Home',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.search_outlined),
-                  activeIcon: Icon(Icons.search),
-                  label: 'Search',
+                  icon: Icon(Icons.emoji_events_outlined),
+                  activeIcon: Icon(Icons.emoji_events),
+                  label: 'Achievements',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.receipt_long_outlined),
@@ -446,15 +446,6 @@ class _HomeTabState extends State<HomeTab> {
       default:
         return Icons.restaurant;
     }
-  }
-}
-
-class SearchTab extends StatelessWidget {
-  const SearchTab({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const SearchPage();
   }
 }
 
