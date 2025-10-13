@@ -29,8 +29,8 @@ class _HomePageState extends State<HomePage> {
 
   final List<Widget> _pages = [
     const ImprovedHomeTab(),
-    const AchievementsPage(),
     const OrdersPage(),
+    const AchievementsPage(),
     const ProfilePage(),
   ];
 
@@ -106,14 +106,14 @@ class _HomePageState extends State<HomePage> {
                   label: 'Home',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.emoji_events_outlined),
-                  activeIcon: Icon(Icons.emoji_events),
-                  label: 'Achievements',
-                ),
-                BottomNavigationBarItem(
                   icon: Icon(Icons.receipt_long_outlined),
                   activeIcon: Icon(Icons.receipt_long),
                   label: 'Orders',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.emoji_events_outlined),
+                  activeIcon: Icon(Icons.emoji_events),
+                  label: 'Achievements',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.person_outline),
