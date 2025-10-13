@@ -221,21 +221,21 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
         child: GestureDetector(
           onTap: _openLocationSelection,
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               children: [
                 Icon(
                   Icons.location_on,
-                  size: 20,
+                  size: 18,
                   color: themeManager.textColor,
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 6),
                 Expanded(
                   child: Text(
                     _selectedLocation?.displayAddress ?? 'Select location',
                     style: TextStyle(
                       color: themeManager.textColor,
-                      fontSize: 15,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
                     maxLines: 1,
@@ -244,7 +244,7 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
                 ),
                 Icon(
                   Icons.keyboard_arrow_down,
-                  size: 20,
+                  size: 18,
                   color: themeManager.textColor,
                 ),
               ],
@@ -258,7 +258,7 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
   // Modern App Bar with Gradient Background
   Widget _buildModernAppBar(ThemeManager themeManager) {
     return SliverAppBar(
-      expandedHeight: 180,
+      expandedHeight: 140,
       floating: false,
       pinned: true,
       backgroundColor: Colors.transparent,
@@ -271,7 +271,7 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
           child: SafeArea(
             top: false,
             child: Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -293,13 +293,13 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
                                       _getTimeBasedGreeting(),
                                       style: TextStyle(
                                         color: themeManager.textColor.withOpacity(0.7),
-                                        fontSize: 16,
+                                        fontSize: 14,
                                         fontWeight: FontWeight.w400,
                                       ),
                                     ),
                                   ),
                                 ),
-                                const SizedBox(height: 8),
+                                const SizedBox(height: 4),
                                 FadeTransition(
                                   opacity: _fadeAnimation,
                                   child: SlideTransition(
@@ -327,9 +327,9 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
                                               'What would you like\nto $text today? $emoji',
                                               style: TextStyle(
                                                 color: themeManager.textColor,
-                                                fontSize: 22,
+                                                fontSize: 20,
                                                 fontWeight: FontWeight.bold,
-                                                height: 1.2,
+                                                height: 1.1,
                                               ),
                                             ),
                                           ),
@@ -341,7 +341,7 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
                               ],
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: 8),
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -350,14 +350,14 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
                                 onTap: () => themeManager.toggleTheme(),
                                 themeManager: themeManager,
                               ),
-                              const SizedBox(width: 6),
+                              const SizedBox(width: 4),
                               _buildActionButton(
                                 icon: Icons.notifications_outlined,
                                 onTap: () {},
                                 badge: true,
                                 themeManager: themeManager,
                               ),
-                              const SizedBox(width: 6),
+                              const SizedBox(width: 4),
                               _buildActionButton(
                                 icon: Icons.shopping_cart_outlined,
                                 onTap: () {},
@@ -387,11 +387,11 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
         child: SlideTransition(
           position: _slideAnimation,
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
             child: Column(
               children: [
                 _buildModernSearchBar(themeManager),
-                const SizedBox(height: 20),
+                const SizedBox(height: 12),
                 _buildQuickActions(themeManager),
               ],
             ),
@@ -409,7 +409,7 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
         child: SlideTransition(
           position: _slideAnimation,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
                 Expanded(
@@ -420,7 +420,7 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
                     color: const Color(0xFF4CAF50),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 10),
                 Expanded(
                   child: _buildStatCard(
                     icon: Icons.star,
@@ -532,11 +532,11 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 36,
-        height: 36,
+        width: 32,
+        height: 32,
         decoration: BoxDecoration(
           color: (themeManager?.textColor ?? Colors.white).withOpacity(0.2),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
           border: Border.all(
             color: (themeManager?.textColor ?? Colors.white).withOpacity(0.3),
             width: 1,
@@ -548,16 +548,16 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
               child: Icon(
                 icon,
                 color: themeManager?.textColor ?? Colors.white,
-                size: 18,
+                size: 16,
               ),
             ),
             if (badge)
               Positioned(
-                right: 8,
-                top: 8,
+                right: 6,
+                top: 6,
                 child: Container(
-                  width: 8,
-                  height: 8,
+                  width: 7,
+                  height: 7,
                   decoration: const BoxDecoration(
                     color: Color(0xFFFF5722),
                     shape: BoxShape.circle,
