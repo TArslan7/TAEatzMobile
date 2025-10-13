@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
+import '../../../../core/theme/theme_manager.dart';
 import '../../../restaurants/presentation/bloc/restaurant_bloc.dart';
 import '../../../restaurants/presentation/bloc/restaurant_state.dart';
 
@@ -21,33 +23,37 @@ class HomeCategoriesSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: fadeAnimation,
-      child: SlideTransition(
-        position: slideAnimation,
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Categories',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+    return Consumer<ThemeManager>(
+      builder: (context, themeManager, child) {
+        return FadeTransition(
+          opacity: fadeAnimation,
+          child: SlideTransition(
+            position: slideAnimation,
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Categories',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: themeManager.textColor,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildCategoriesList(themeManager),
+                ],
               ),
-              const SizedBox(height: 16),
-              _buildCategoriesList(),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildCategoriesList() {
+  Widget _buildCategoriesList(ThemeManager themeManager) {
     return BlocBuilder<RestaurantBloc, RestaurantState>(
       builder: (context, state) {
         if (categories.isEmpty) {
@@ -59,7 +65,7 @@ class HomeCategoriesSection extends StatelessWidget {
               itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.only(right: 16),
-                  child: _buildCategoryShimmer(),
+                  child: _buildCategoryShimmer(themeManager),
                 );
               },
             ),
@@ -81,6 +87,7 @@ class HomeCategoriesSection extends StatelessWidget {
                   category: category,
                   isSelected: isSelected,
                   onTap: () => onCategorySelected(category),
+                  themeManager: themeManager,
                 ),
               );
             },
@@ -94,6 +101,7 @@ class HomeCategoriesSection extends StatelessWidget {
     required String category,
     required bool isSelected,
     required VoidCallback onTap,
+    required ThemeManager themeManager,
   }) {
     final colors = [
       const Color(0xFFDC2626),
@@ -111,13 +119,13 @@ class HomeCategoriesSection extends StatelessWidget {
         duration: const Duration(milliseconds: 300),
         width: 70,
         decoration: BoxDecoration(
-          color: isSelected ? color : const Color(0xFF2D2D2D),
+          color: isSelected ? color : themeManager.cardColor,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
               color: isSelected
                   ? color.withOpacity(0.3)
-                  : Colors.black.withOpacity(0.05),
+                  : themeManager.shadowColor.withOpacity(0.15),
               blurRadius: isSelected ? 15 : 5,
               offset: const Offset(0, 5),
             ),
@@ -143,8 +151,8 @@ class HomeCategoriesSection extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               category,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: themeManager.textColor,
                 fontWeight: FontWeight.w600,
                 fontSize: 12,
               ),
@@ -158,11 +166,11 @@ class HomeCategoriesSection extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryShimmer() {
+  Widget _buildCategoryShimmer(ThemeManager themeManager) {
     return Container(
       width: 80,
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        color: themeManager.cardColor,
         borderRadius: BorderRadius.circular(20),
       ),
     );
