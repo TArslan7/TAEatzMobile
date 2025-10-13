@@ -29,6 +29,7 @@ class _ProfilePageState extends State<ProfilePage> {
     context.read<ProfileBloc>().add(const LoadProfile());
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeManager>(
