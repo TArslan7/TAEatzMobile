@@ -258,7 +258,7 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
   // Modern App Bar with Gradient Background
   Widget _buildModernAppBar(ThemeManager themeManager) {
     return SliverAppBar(
-      expandedHeight: 140,
+      expandedHeight: 90,
       floating: false,
       pinned: true,
       backgroundColor: Colors.transparent,
@@ -271,100 +271,95 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
           child: SafeArea(
             top: false,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  Row(
                     children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                FadeTransition(
-                                  opacity: _fadeAnimation,
-                                  child: SlideTransition(
-                                    position: _slideAnimation,
-                                    child: Text(
-                                      _getTimeBasedGreeting(),
-                                      style: TextStyle(
-                                        color: themeManager.textColor.withOpacity(0.7),
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            FadeTransition(
+                              opacity: _fadeAnimation,
+                              child: SlideTransition(
+                                position: _slideAnimation,
+                                child: Text(
+                                  _getTimeBasedGreeting(),
+                                  style: TextStyle(
+                                    color: themeManager.textColor.withOpacity(0.7),
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w400,
                                   ),
                                 ),
-                                const SizedBox(height: 4),
-                                FadeTransition(
-                                  opacity: _fadeAnimation,
-                                  child: SlideTransition(
-                                    position: _slideAnimation,
-                                    child: AnimatedBuilder(
-                                      animation: _eatDrinkAnimation,
-                                      builder: (context, child) {
-                                        final isEat = _eatDrinkAnimation.value < 0.5;
-                                        final text = isEat ? 'eat' : 'drink';
-                                        final emoji = isEat ? '🍽️' : '🥤';
-                                        
-                                        // Smooth transition effect
-                                        final fadeValue = isEat 
-                                            ? (1.0 - (_eatDrinkAnimation.value * 2)).clamp(0.0, 1.0)
-                                            : ((_eatDrinkAnimation.value - 0.5) * 2).clamp(0.0, 1.0);
-                                        
-                                        return AnimatedOpacity(
-                                          opacity: fadeValue,
-                                          duration: const Duration(milliseconds: 500),
-                                          child: AnimatedSlide(
-                                            offset: Offset(0, isEat ? 0.0 : 0.1),
-                                            duration: const Duration(milliseconds: 500),
-                                            curve: Curves.easeInOut,
-                                            child: Text(
-                                              'What would you like\nto $text today? $emoji',
-                                              style: TextStyle(
-                                                color: themeManager.textColor,
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.bold,
-                                                height: 1.1,
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
+                            const SizedBox(height: 2),
+                            FadeTransition(
+                              opacity: _fadeAnimation,
+                              child: SlideTransition(
+                                position: _slideAnimation,
+                                child: AnimatedBuilder(
+                                  animation: _eatDrinkAnimation,
+                                  builder: (context, child) {
+                                    final isEat = _eatDrinkAnimation.value < 0.5;
+                                    final text = isEat ? 'eat' : 'drink';
+                                    final emoji = isEat ? '🍽️' : '🥤';
+                                    
+                                    // Smooth transition effect
+                                    final fadeValue = isEat 
+                                        ? (1.0 - (_eatDrinkAnimation.value * 2)).clamp(0.0, 1.0)
+                                        : ((_eatDrinkAnimation.value - 0.5) * 2).clamp(0.0, 1.0);
+                                    
+                                    return AnimatedOpacity(
+                                      opacity: fadeValue,
+                                      duration: const Duration(milliseconds: 500),
+                                      child: AnimatedSlide(
+                                        offset: Offset(0, isEat ? 0.0 : 0.1),
+                                        duration: const Duration(milliseconds: 500),
+                                        curve: Curves.easeInOut,
+                                        child: Text(
+                                          'What would you like to $text? $emoji',
+                                          style: TextStyle(
+                                            color: themeManager.textColor,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            height: 1.0,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _buildActionButton(
+                            icon: Icons.brightness_6_outlined,
+                            onTap: () => themeManager.toggleTheme(),
+                            themeManager: themeManager,
                           ),
-                          const SizedBox(width: 8),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              _buildActionButton(
-                                icon: Icons.brightness_6_outlined,
-                                onTap: () => themeManager.toggleTheme(),
-                                themeManager: themeManager,
-                              ),
-                              const SizedBox(width: 4),
-                              _buildActionButton(
-                                icon: Icons.notifications_outlined,
-                                onTap: () {},
-                                badge: true,
-                                themeManager: themeManager,
-                              ),
-                              const SizedBox(width: 4),
-                              _buildActionButton(
-                                icon: Icons.shopping_cart_outlined,
-                                onTap: () {},
-                                badge: true,
-                                themeManager: themeManager,
-                              ),
-                            ],
+                          const SizedBox(width: 3),
+                          _buildActionButton(
+                            icon: Icons.notifications_outlined,
+                            onTap: () {},
+                            badge: true,
+                            themeManager: themeManager,
+                          ),
+                          const SizedBox(width: 3),
+                          _buildActionButton(
+                            icon: Icons.shopping_cart_outlined,
+                            onTap: () {},
+                            badge: true,
+                            themeManager: themeManager,
                           ),
                         ],
                       ),
