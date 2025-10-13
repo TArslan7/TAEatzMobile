@@ -34,15 +34,10 @@ class HomeGreetingSection extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Left - Greeting Text
+          // Greeting Text - Full Width
           Expanded(
             child: _buildGreetingText(),
           ),
-          
-          const SizedBox(width: 12),
-          
-          // Right - Action Buttons
-          _buildActionButtons(),
         ],
       ),
     );
@@ -110,76 +105,5 @@ class HomeGreetingSection extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButtons() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      padding: const EdgeInsets.all(4),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildActionButton(
-            icon: Icons.notifications_outlined,
-            onTap: () {},
-            badge: true,
-          ),
-          const SizedBox(width: 4),
-          _buildActionButton(
-            icon: Icons.shopping_cart_outlined,
-            onTap: () {},
-            badge: true,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionButton({
-    required IconData icon,
-    required VoidCallback onTap,
-    bool badge = false,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 32,
-        height: 32,
-        decoration: BoxDecoration(
-          color: themeManager.textColor.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: themeManager.textColor.withOpacity(0.3),
-            width: 1,
-          ),
-        ),
-        child: Stack(
-          children: [
-            Center(
-              child: Icon(
-                icon,
-                color: themeManager.textColor,
-                size: 16,
-              ),
-            ),
-            if (badge)
-              Positioned(
-                right: 6,
-                top: 6,
-                child: Container(
-                  width: 7,
-                  height: 7,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFFF5722),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
