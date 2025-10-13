@@ -232,7 +232,7 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
           child: InkWell(
             onTap: _openLocationSelection,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
               child: Row(
                 children: [
                   Container(
@@ -294,50 +294,33 @@ class _ImprovedHomeTabState extends State<ImprovedHomeTab>
 
   // Structured App Bar Header
   Widget _buildModernAppBar(ThemeManager themeManager) {
-    return SliverAppBar(
-      expandedHeight: 110,
-      floating: false,
-      pinned: true,
-      backgroundColor: themeManager.primaryRed,
-      elevation: 0,
-      flexibleSpace: FlexibleSpaceBar(
-        background: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                themeManager.primaryRed.withOpacity(0.98),
-                themeManager.primaryRed.withOpacity(0.96),
-              ],
-            ),
+    return SliverToBoxAdapter(
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              themeManager.primaryRed.withOpacity(0.98),
+              themeManager.primaryRed.withOpacity(0.96),
+            ],
           ),
-          child: SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Content Row
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // Left Side - Greeting and Main Text
-                      Expanded(
-                        child: _buildGreetingSection(themeManager),
-                      ),
-                      
-                      const SizedBox(width: 12),
-                      
-                      // Right Side - Action Buttons
-                      _buildActionButtons(themeManager),
-                    ],
-                  ),
-                ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Left Side - Greeting and Main Text
+              Expanded(
+                child: _buildGreetingSection(themeManager),
               ),
-            ),
+              
+              const SizedBox(width: 12),
+              
+              // Right Side - Action Buttons
+              _buildActionButtons(themeManager),
+            ],
           ),
         ),
       ),
